@@ -5,8 +5,9 @@ package cpp.enrollmentsubsystem;
  *
  */
 public class CourseCart {
- 
-    public Course[] courses;
+
+    public Student student;
+    public Section[] courses;
     
     /**
      * 
