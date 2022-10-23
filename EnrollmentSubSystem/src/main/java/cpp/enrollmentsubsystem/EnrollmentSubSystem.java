@@ -38,11 +38,8 @@ public class EnrollmentSubSystem {
      * @param args 
      */
     public static void main(String[] args){
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new EnrollmentSubSystem();
-            }
+        SwingUtilities.invokeLater(() -> {
+            new EnrollmentSubSystem();
         });
     }
 }
