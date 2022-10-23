@@ -41,7 +41,7 @@ public class EnrollmentSubSystem {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new Enrollment();
+                new EnrollmentSubSystem();
             }
         });
     }
