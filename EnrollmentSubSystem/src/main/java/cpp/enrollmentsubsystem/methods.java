@@ -12,6 +12,7 @@ public class methods {
 
     public void logIn(String username, String password){
         //authenticate username and password input
+        //password will be hashed and compared to the hashes stored in the databse
     }
 
     public void search(String keyword){
@@ -58,6 +59,10 @@ public class methods {
 
     public void removeFromCart(Section section, CourseCart cart){
         //remove selected section from student's cart
+    }
+
+    public void viewCart(CourseCart cart) {
+        //display the cart's contents
     }
 
     public void finalizeCart(CourseCart cart){
