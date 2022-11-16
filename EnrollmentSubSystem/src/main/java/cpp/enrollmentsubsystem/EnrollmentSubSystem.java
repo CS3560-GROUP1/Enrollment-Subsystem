@@ -16,10 +16,11 @@ public class EnrollmentSubSystem {
     
     public EnrollmentSubSystem(){
         mainFrame = new JFrame();
-        mainFrame.setLocationRelativeTo(null);
         mainFrame.setSize(new Dimension(600, 400));
         mainFrame.setTitle("Enrollment Subsystem");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setLocationRelativeTo(null);
+
 
         JPanel face = new JPanel();
         CardLayout layout = new CardLayout(0, 0);
@@ -30,6 +31,9 @@ public class EnrollmentSubSystem {
         
         mainFrame.add(face);
         layout.show(face, firstScreen.getName());
+    }
+    
+    public void start(){
         mainFrame.setVisible(true);
     }
     
@@ -39,7 +43,7 @@ public class EnrollmentSubSystem {
      */
     public static void main(String[] args){
         SwingUtilities.invokeLater(() -> {
-            new EnrollmentSubSystem();
+            new EnrollmentSubSystem().start();
         });
     }
 }
