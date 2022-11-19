@@ -24,7 +24,7 @@ public class SearchPanel extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-
+        
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setText("Course Search");
@@ -90,6 +90,7 @@ public class SearchPanel extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }                        
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {                                            
