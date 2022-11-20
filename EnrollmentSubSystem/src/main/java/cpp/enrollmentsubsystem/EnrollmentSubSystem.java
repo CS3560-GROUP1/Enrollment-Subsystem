@@ -65,6 +65,17 @@ public class EnrollmentSubSystem {
         });
         search.setAlignmentX(Component.CENTER_ALIGNMENT);
         firstScreen.add(search);
+        JButton createAcct = new JButton("create account screen");
+        createAcct.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //close firstScreen window and open search window
+                String[] args = {};
+                SignUpPanel.main(args);
+                mainFrame.dispose();
+            }
+        });
+        createAcct.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firstScreen.add(createAcct);
     }
     
     public void start(){
