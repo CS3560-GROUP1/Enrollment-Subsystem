@@ -60,6 +60,7 @@ public class methods {
                         JOptionPane.ERROR_MESSAGE);
             alertFrame.dispose();
         }
+        System.out.println("add to cart called");
     }
 
     public boolean checkConflicts(Section section, CourseCart cart){
@@ -143,9 +144,11 @@ public class methods {
             //this should return an ArrayList with only 1 value
             ArrayList<Integer> numEnrolled = new ArrayList<Integer>();
             //if this value + this student is > enrollmentCap + waitlistCap, there is a capacity conflict
-            if(numEnrolled.get(0) + 1 > section.getEnrollCapcity() + section.getWaitCapacity()){
-                conflictCheck = true;
-                return conflictCheck;
+            if(numEnrolled.size() > 0){
+                if(numEnrolled.get(0) + 1 > section.getEnrollCapcity() + section.getWaitCapacity()){
+                    conflictCheck = true;
+                    return conflictCheck;
+                }
             }
         //if there are no conflicts, this should return false
         return conflictCheck;

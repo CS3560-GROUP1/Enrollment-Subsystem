@@ -11,10 +11,12 @@ public class Course {
     public int getCourseID() {return this.courseID;}
     public String getName() {return this.name;}
     public int getUnits() {return this.units;}
+    public Course[] getPrerequisites() {return this.prerequisites;}
 
     public void setCourseID(int courseID) {this.courseID = courseID;}
     public void setName(String name) {this.name = name;}
     public void setUnits(int units) {this.units = units;}
+    public void setPrerequisites(Course[] prerequisites) {this.prerequisites = prerequisites;}
     
     public Course(){
         

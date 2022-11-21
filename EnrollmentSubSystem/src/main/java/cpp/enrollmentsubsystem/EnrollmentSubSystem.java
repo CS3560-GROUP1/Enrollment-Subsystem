@@ -76,6 +76,17 @@ public class EnrollmentSubSystem {
         });
         createAcct.setAlignmentX(Component.CENTER_ALIGNMENT);
         firstScreen.add(createAcct);
+        JButton sectionDetails = new JButton("section details screen (mock data)");
+        sectionDetails.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //close firstScreen window and open search window
+                String[] args = {};
+                SectionDetailsPanel.main(args, null, null);
+                mainFrame.dispose();
+            }
+        });
+        sectionDetails.setAlignmentX(Component.CENTER_ALIGNMENT);
+        firstScreen.add(sectionDetails);
     }
     
     public void start(){
