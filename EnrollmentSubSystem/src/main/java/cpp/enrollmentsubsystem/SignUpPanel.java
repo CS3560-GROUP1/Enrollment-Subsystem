@@ -23,7 +23,20 @@ import javax.swing.SwingUtilities;
  */
 public class SignUpPanel extends JFrame{
     
+    String username;    
+    String password;
+    String name;
+    String email;
+    String major;
+
+    
     public SignUpPanel(){
+        username = "";        
+        password = "";
+        name = "";
+        email = "";
+        major = "";
+
         setSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         setTitle("Create Account");
@@ -90,6 +103,46 @@ public class SignUpPanel extends JFrame{
         //submit button
         JButton submit = new JButton("Submit");
         submit.setBounds(275, 190, 80, 20);
+        submit.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                //assign entered values to variables
+                username = unInput.getText();
+                password = pwInput.getText();
+                name = nameInput.getText();
+                email = emailInput.getText();
+                major = majorInput.getText();
+                
+                //check if 1 or more required fields is empty
+                if(username.isBlank() || password.isBlank() || name.isBlank() || email.isBlank()){
+                    JFrame alertFrame = new JFrame();
+                    alertFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    alertFrame.setVisible(false);
+                    JOptionPane.showMessageDialog(alertFrame, 
+                        "1 or more required fields empty", 
+                        "Sign Up Failed", 
+                        JOptionPane.ERROR_MESSAGE);
+                    alertFrame.dispose();
+                }
+                else{
+                    //create new row in student table in database and populate it with the entered information
+                    //INSERT INTO student (student_ID, student_name, student_email, student_username, student_password, student_major)
+                    //VALUES ((generated ID, not sure how this would work yet), 
+                    //'"+name+"', '"+email+"', '"+username+"', '"+password+"', '"+major+"');
+                    JFrame alertFrame = new JFrame();
+                    alertFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    alertFrame.setVisible(false);
+                    JOptionPane.showMessageDialog(alertFrame, 
+                        "Account Created!\n"
+                        + "Click OK to return to menu screen",
+                        "Sign Up Success", 
+                        JOptionPane.PLAIN_MESSAGE);
+                    alertFrame.dispose();
+                    String[] args = {};
+                    EnrollmentSubSystem.main(args);
+                    dispose();
+                }
+            }
+        });
         container.add(submit);
         add(container);
     }
