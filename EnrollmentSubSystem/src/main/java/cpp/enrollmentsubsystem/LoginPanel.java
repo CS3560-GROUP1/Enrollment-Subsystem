@@ -84,47 +84,39 @@ public class LoginPanel extends JFrame{
                             
                             Connection con = EnrollmentSubSystem.getSQLConnection();
                             Statement stament = con.createStatement();
+                            
                             String sql = "select * from Logins where username='" + username + "';";
                             ResultSet RS = stament.executeQuery(sql);
-                            
                             if(!RS.isBeforeFirst()){
+                                
                                 System.out.println("No Username Matches");
                                 
                             }else{
-                                while(RS.next()){
+                                if(RS.next()){
+                                    
                                     String rsUser = RS.getString("username");
                                     String passHex = RS.getString("password_Hash");
                                     String saltHex = RS.getString("password_Salt");
                                     String studentID = RS.getString("studentID");
-                                    
+
                                     byte[] salt = EnrollmentSubSystem.hexStringToBit(saltHex);
                                     String inputPassHex = EnrollmentSubSystem.bitArrayToHex( EnrollmentSubSystem.passwordHash(password, salt) );
-                                    
-                                    if(rsUser == null){
-                                        con.close();
-                                        return;
-                                    }
-                                    
+
                                     if (passHex.equals(inputPassHex)){
                                         //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
                                         con.close();
                                         new HomePanel().setVisible(true);
                                         dispose();
-                                        
+
                                     } else {
                                         JOptionPane.showMessageDialog(mockLogin, "Password is incorrect", "Incorrect Password", JOptionPane.ERROR_MESSAGE);
                                     }
-                                
-                                
-                                    
                                 }
+                                
                             }
-                            
-                            
-                            
                             con.close();
-                            
                         } catch (SQLException ex) {
+                            System.err.println(ex.toString());
                         }
                         
                     } else if (username != null){ // No Password Given
