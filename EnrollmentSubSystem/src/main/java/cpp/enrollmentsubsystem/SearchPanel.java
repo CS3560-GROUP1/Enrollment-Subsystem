@@ -12,7 +12,20 @@ import javax.swing.JCheckBox;
  * @author nickafic
  */
 public class SearchPanel extends javax.swing.JFrame {
-
+    
+    private javax.swing.JButton searchButton;
+    private javax.swing.JButton clearButton;
+    private javax.swing.JComboBox<String> subjectCombo;
+    private javax.swing.JComboBox<String> termCombo;
+    private javax.swing.JComboBox<String> searchCombo;
+    private javax.swing.JLabel searchLabel;
+    private javax.swing.JLabel subjectLabel;
+    private javax.swing.JLabel courseNumLabel;
+    private javax.swing.JLabel termLabel;
+    private javax.swing.JLabel optionsLabel;
+    private javax.swing.JTextField numTextField;
+    private javax.swing.JCheckBox openCheck;
+    
     /**
      * Creates new form SearchPanel
      */
@@ -179,19 +192,5 @@ public class SearchPanel extends javax.swing.JFrame {
             }
         });
     }
-
-                    
-    private javax.swing.JButton searchButton;
-    private javax.swing.JButton clearButton;
-    private javax.swing.JComboBox<String> subjectCombo;
-    private javax.swing.JComboBox<String> termCombo;
-    private javax.swing.JComboBox<String> searchCombo;
-    private javax.swing.JLabel searchLabel;
-    private javax.swing.JLabel subjectLabel;
-    private javax.swing.JLabel courseNumLabel;
-    private javax.swing.JLabel termLabel;
-    private javax.swing.JLabel optionsLabel;
-    private javax.swing.JTextField numTextField;
-    private javax.swing.JCheckBox openCheck;
                  
 }
