@@ -287,7 +287,7 @@ public class EnrollmentSubSystem {
         
         con = DriverManager.getConnection(url, user, pass);
         if(con != null){
-            System.out.println(con.toString());
+            System.out.println("Connection Success: " + con.toString());
         }else{
             System.out.println("Connection Failed: Connetcion == null");
         }
@@ -295,6 +295,10 @@ public class EnrollmentSubSystem {
         return con;
     }
     
+    /**
+     * 
+     * @param pass 
+     */
     public static void createPasswordHashSaltInfo(String pass){
         byte[] salt = createSalt();
         byte[] hash = passwordHash(pass, salt);
@@ -374,6 +378,13 @@ public class EnrollmentSubSystem {
         return bitArray;
     }
     
+    /**
+     * 
+     * @param con
+     * @param tableName
+     * @return
+     * @throws SQLException 
+     */
     public static boolean tableSQLExist(Connection con, String tableName) throws SQLException{
         
         PreparedStatement statement = con.prepareStatement("Select count(*) "
