@@ -14,7 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -42,6 +41,7 @@ public class LoginPanel extends JFrame{
         super();
         setTitle("Mock LoginPanel");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
         
         Dimension ScreenInformation = Toolkit.getDefaultToolkit().getScreenSize(); // Get ScreenSize
         Dimension size = new Dimension( 
@@ -89,8 +89,6 @@ public class LoginPanel extends JFrame{
                             PreparedStatement statement= con.prepareStatement("select * from logins "
                                     + " where username= ? ;" );
                             statement.setString(1, username);
-                            
-                            String sql = "select * from Logins where username='" + username + "';";
                             ResultSet RS = statement.executeQuery();
                             
                             if(!RS.isBeforeFirst()){
@@ -109,7 +107,7 @@ public class LoginPanel extends JFrame{
                                     if (passHex.equals(inputPassHex)){
                                         //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
                                         con.close();
-                                        new HomePanel().setVisible(true);
+                                        new HomePanel().startUp();
                                         dispose();
 
                                     } else {
