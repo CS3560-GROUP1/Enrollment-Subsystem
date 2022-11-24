@@ -20,6 +20,12 @@
     </dependencies>
     
     <build>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+            </resource>
+        </resources>
+        
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -53,6 +59,28 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    
+                    <outputDirectory>${project.build.directory}/resources</outputDirectory>
+                    <resources>
+                        <resource>
+                            
+                            <directory>src/resources</directory>
+                            
+                            <excludes>
+                                <exclude></exclude>
+                            </excludes>
+                            
+                            <filtering>true</filtering>
+                            
+                        </resource>
+                    </resources>
+                    
+                </configuration>
             </plugin>
         </plugins>
     </build>

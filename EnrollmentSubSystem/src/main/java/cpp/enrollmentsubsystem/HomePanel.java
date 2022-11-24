@@ -5,8 +5,10 @@
 package cpp.enrollmentsubsystem;
 
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  *
@@ -14,9 +16,13 @@ import javax.swing.JFrame;
  */
 public class HomePanel extends JFrame{
     
+    private JPanel facePanel;
+    private GridBagLayout layout;
+    
     public HomePanel(){
         super();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setTitle("");
         
         Dimension ScreenInformation = Toolkit.getDefaultToolkit().getScreenSize(); // Get ScreenSize
         Dimension size = new Dimension( 
@@ -25,6 +31,12 @@ public class HomePanel extends JFrame{
         );
         setSize(size);
         setLocationRelativeTo(null);
+        
+        facePanel = new JPanel();
+        layout = new GridBagLayout();
+        facePanel.setLayout(layout);
+        
+        
         
         
     }
