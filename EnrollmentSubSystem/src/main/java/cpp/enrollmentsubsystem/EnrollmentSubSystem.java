@@ -36,9 +36,7 @@ public class EnrollmentSubSystem {
     private JFrame frame;
     
     private boolean debugMode = false;
-    
-    private Dimension ScreenInformation;
-    
+        
     private JPanel face;
     private CardLayout layout;
     
@@ -56,7 +54,7 @@ public class EnrollmentSubSystem {
             frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-            ScreenInformation = Toolkit.getDefaultToolkit().getScreenSize(); // Get ScreenSize
+            Dimension ScreenInformation = Toolkit.getDefaultToolkit().getScreenSize(); // Get ScreenSize
             Dimension size = new Dimension( 
                     (int)(ScreenInformation.getWidth() * 0.6),
                     (int)(ScreenInformation.getHeight() * 0.4) 
@@ -123,16 +121,23 @@ public class EnrollmentSubSystem {
             
             loginPanel = new LoginPanel();
             
+            
         }   
     }
     
+    /**
+     * 
+     */
     public void startUP(){
-    
         
         if(!debugMode)
             loginPanel.setVisible(true);
+        
     }
     
+    /**
+     * 
+     */
     public static void checkAndCreateSQLTables(){
         
         try {

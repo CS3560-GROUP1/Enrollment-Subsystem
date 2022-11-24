@@ -4,25 +4,23 @@
  */
 package cpp.enrollmentsubsystem;
 
+import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 /**
@@ -37,6 +35,8 @@ public class LoginPanel extends JFrame{
     private JTextField usernameJTextField;
     private JTextField passwordJTextField;
     
+    private JPanel facePanel;
+    private CardLayout layout;
     
     public LoginPanel() {
         super();
@@ -51,6 +51,9 @@ public class LoginPanel extends JFrame{
         setSize(size);
         setLocationRelativeTo(null);
         
+        layout = new CardLayout(0, 0);
+        facePanel = new JPanel(layout);
+               
         JPanel mockLogin = new JPanel();
         mockLogin.setPreferredSize(getPreferredSize());
         mockLogin.setLayout(new GridBagLayout());
@@ -83,21 +86,22 @@ public class LoginPanel extends JFrame{
                         try {
                             
                             Connection con = EnrollmentSubSystem.getSQLConnection();
-                            Statement stament = con.createStatement();
+                            PreparedStatement statement= con.prepareStatement("select * from logins "
+                                    + " where username= ? ;" );
+                            statement.setString(1, username);
                             
                             String sql = "select * from Logins where username='" + username + "';";
-                            ResultSet RS = stament.executeQuery(sql);
+                            ResultSet RS = statement.executeQuery();
+                            
                             if(!RS.isBeforeFirst()){
                                 
-                                System.out.println("No Username Matches");
+                                JOptionPane.showMessageDialog(mockLogin, "Cant Find Account", "No Accounts", JOptionPane.INFORMATION_MESSAGE);
                                 
                             }else{
                                 if(RS.next()){
                                     
-                                    String rsUser = RS.getString("username");
                                     String passHex = RS.getString("password_Hash");
                                     String saltHex = RS.getString("password_Salt");
-                                    String studentID = RS.getString("studentID");
 
                                     byte[] salt = EnrollmentSubSystem.hexStringToBit(saltHex);
                                     String inputPassHex = EnrollmentSubSystem.bitArrayToHex( EnrollmentSubSystem.passwordHash(password, salt) );
@@ -128,11 +132,21 @@ public class LoginPanel extends JFrame{
                     
                 }
                 
-                case "Forgot Password" ->{
+                case "Recovery Back" -> {
+                    layout.show(facePanel, "login");
+                }
                 
+                case "Recovery Submit" -> {
+                    
+                }
+                
+                case "Forgot Password" ->{
+                    layout.show(facePanel, "password");
                 }
                 
                 case "Create Account" -> {
+                    new SignUpPanel().setVisible(true);
+                    dispose();
                     
                 }
                     
@@ -187,7 +201,66 @@ public class LoginPanel extends JFrame{
         createAccJButton.setActionCommand("Create Account");
         mockLogin.add(createAccJButton, c);
 
-        add(mockLogin);
+        facePanel.add(mockLogin, "login");
+        
+        // Password Recovery Panel
+        JPanel passwordRecoveryPanel = new JPanel();
+        passwordRecoveryPanel.setLayout(new GridBagLayout());
+        
+        JLabel informationJLabel = new JLabel();
+        informationJLabel.setText("Password Recovery");
+        c.gridx = 1;
+        c.gridy = 0;
+        c.gridwidth = 2;
+        c.gridheight = 2;
+        passwordRecoveryPanel.add(informationJLabel, c);
+        c.gridheight = 1;
+        
+        JLabel usernameLabel = new JLabel();
+        usernameLabel.setText("Username: ");
+        c.gridx = 1;
+        c.gridy = 3;
+        passwordRecoveryPanel.add(usernameLabel,c);
+        
+        
+        JTextField recoveryUsernameJTextField = new JTextField();
+        c.gridx = 1;
+        c.gridy = 4;
+        passwordRecoveryPanel.add(recoveryUsernameJTextField,c);
+        
+        JLabel studentIDJLabel = new JLabel();
+        studentIDJLabel.setText("StudentID: ");
+        c.gridx = 1;
+        c.gridy = 6;
+        passwordRecoveryPanel.add(studentIDJLabel, c);
+        
+        JTextField studentIDJTextField = new JTextField();
+        c.gridx = 1;
+        c.gridy = 7;
+        passwordRecoveryPanel.add(studentIDJTextField,c);
+        
+        JButton passwordRecoveryJButton = new JButton();
+        passwordRecoveryJButton.setText("Submit");
+        passwordRecoveryJButton.setActionCommand("Recovery Submit");
+        passwordRecoveryJButton.addActionListener(loginListener);
+        
+        c.gridx = 2;
+        c.gridy = 9;
+        passwordRecoveryPanel.add(passwordRecoveryJButton,c);
+        
+        JButton passRecBackButton = new JButton();
+        passRecBackButton.setText("Back");
+        passRecBackButton.setActionCommand("Recovery Back");
+        passRecBackButton.addActionListener(loginListener);
+        c.gridwidth = 1;
+        c.gridx = 3;
+        c.gridy = 12;
+        passwordRecoveryPanel.add(passRecBackButton,c);
+        
+        facePanel.add(passwordRecoveryPanel, "password");
+        
+        add(facePanel);
+        layout.show(facePanel, "login");
     }
     
     public static void main(String[] args){
