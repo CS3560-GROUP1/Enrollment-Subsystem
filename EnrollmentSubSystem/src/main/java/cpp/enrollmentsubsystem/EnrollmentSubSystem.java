@@ -12,6 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -41,11 +42,16 @@ public class EnrollmentSubSystem {
     private JPanel face;
     private CardLayout layout;
     
+    private LoginPanel loginPanel;
+    
     private JPanel debugPanel;
     
     public EnrollmentSubSystem(boolean mode){
         
         debugMode = mode;
+        
+        checkAndCreateSQLTables();
+        
         if(debugMode){ 
             frame = new JFrame();
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,50 +121,111 @@ public class EnrollmentSubSystem {
             
         } else {
             
-            new LoginPanel().setVisible(true);
+            loginPanel = new LoginPanel();
             
-        }
-        
+        }   
     }
     
+    public void startUP(){
     
-    public void start(){
+        
+        if(!debugMode)
+            loginPanel.setVisible(true);
+    }
+    
+    public static void checkAndCreateSQLTables(){
         
         try {
-            Connection con = getSQLConnection();
-            Statement sta = con.createStatement();
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql;
             
-            String sql = "SELECT username,studentID FROM Logins"
-                    + " Limit 1;";
-            try{
-                ResultSet RS = sta.executeQuery(sql);
-            } catch (SQLException eq){
+            if(!(tableSQLExist(con, "students")) ){ 
+                sql = "create table students ( " +
+                    " studentID varchar(10) unique not null primary key, " +
+                    " first_Name varchar(25) not null, " +
+                    " last_Name varchar(25) not null, " +
+                    " major varchar(20) " +
+                    " );";
+                statement.executeUpdate(sql);
                 
-                sql = "CREATE TABLE Logins (" +
-                    "username varchar(40) UNIQUE," +
-                    "password_Hash varchar(64)," +
-                    "password_Salt varchar(32)," +
-                    "studentID varchar(10) UNIQUE" +
-                    "    );";
-                sta.executeUpdate(sql);
+                sql = "insert into students (studentID, first_Name, last_Name, major) " +
+                    " values" +
+                    " ('0','Leonardo','D','CompSci'), " +
+                    " ('1','Kimtaiyo','M','?'), " +
+                    " ('2','Lindsey','P','?'), " +
+                    " ('3','Nicholas','N','?') " +
+                    " ;";
+                statement.executeUpdate(sql);
+            }
+            
+            if(!(tableSQLExist(con, "logins"))){
+                sql = "create table Logins ( " +
+                    " username varchar(40) unique primary key, " +
+                    " password_Hash varchar(64), " +
+                    " password_Salt varchar(32), " +
+                    " studentID varchar(10) unique not null, " +
+                    " foreign key (studentID) references students(studentID) " +
+                    "); ";
+                statement.executeUpdate(sql);
                 
-                //password = Name
-                sql = "INSERT INTO Logins (username, password_Hash, password_Salt, studentID)" +
-                    " VALUES ('Leonardo','E095F2330853CD6B3A5E2642E9E36569B30FCA0B24E20CD8312E6199F3AB1D27', '0B93FAD115938BCD4A1CAA27BFB6952A', '0')," + 
-                    "('Kimtaiyo','DC7DAC61C84B4E81CC28B37550C2602B0CB4FA35C1CD57BDCD14ADFA41F0A9FA', 'D03146554487FD9CDE36199251E6A811', '1')," + 
-                    "('Lindsey','7480A8F3C1F494AE017491CCEDFB1C7B798A54FE6A5F9AFB35D706314DD90D04', '112F75606C8E83DE4321737E7FB48777', '2')," +
-                    "('Nicholas','D2B0F72B65A5851DB3F1CD36F9AD54550426253C46E9FA911B824157A69D8612', '362DBEC5B9F4C3D559445B320215FF25', '3' );";
-                
-                sta.executeUpdate(sql);
+                sql = "insert into Logins (username, password_Hash, password_Salt, studentID) " +
+                    " values " +
+                    " ('Leonardo','E095F2330853CD6B3A5E2642E9E36569B30FCA0B24E20CD8312E6199F3AB1D27', '0B93FAD115938BCD4A1CAA27BFB6952A', '0'), " +
+                    " ('Kimtaiyo','DC7DAC61C84B4E81CC28B37550C2602B0CB4FA35C1CD57BDCD14ADFA41F0A9FA', 'D03146554487FD9CDE36199251E6A811', '1'), " +
+                    " ('Lindsey','7480A8F3C1F494AE017491CCEDFB1C7B798A54FE6A5F9AFB35D706314DD90D04', '112F75606C8E83DE4321737E7FB48777', '2'), " +
+                    " ('Nicholas','D2B0F72B65A5851DB3F1CD36F9AD54550426253C46E9FA911B824157A69D8612', '362DBEC5B9F4C3D559445B320215FF25', '3') " +
+                    " ; ";
+                statement.executeUpdate(sql);
+            }
+            if(!(tableSQLExist(con, "professors"))){
+                sql = "create table professors ( " +
+                    " professorID varchar(10) unique not null primary key, " +
+                    " first_Name varchar(25) not null, " +
+                    " last_Name varchar(25) not null, " +
+                    " department varchar(20) not null " +
+                    " ); ";
+                statement.executeUpdate(sql);
+            }
+            if(!(tableSQLExist(con, "rooms"))){
+                sql = "create table rooms ( " +
+                    " roomID varchar(10) unique not null primary key, " +
+                    " enrollment_Capacity smallint not null default '0', " +
+                    " wait_List_Capacity smallint not null default '0' " +
+                    " );";
+                statement.executeUpdate(sql);
+            }
+            if(!(tableSQLExist(con, "courses"))){
+                sql = "create table courses ( " +
+                    " courseID varchar(10) unique not null primary key, " +
+                    " course_Name varchar(30) not null, " +
+                    " units smallint not null " +
+                    " );";
+                statement.executeUpdate(sql);
+            }
+            if(!(tableSQLExist(con, "sections"))){
+                sql = "create table sections ( " +
+                    " sectionID varchar(10) unique not null primary key, " +
+                    " courseID varchar(10) unique not null, " +
+                    " professorID varchar(10) unique not null, " +
+                    " term varchar(20), " +
+                    " roomID varchar(10) unique not null, " +
+                    " foreign key (courseID) references courses(courseID), " +
+                    " foreign key (professorID) references professors(professorID), " +
+                    " foreign key (roomID) references rooms(roomID) " +
+                    " ); ";
+                statement.executeUpdate(sql);
             }
             con.close();
         } catch (SQLException ex) {
-            System.err.println("Loginn table population attemped failed. Error: " + ex.toString());
+            
+            System.err.println(ex.toString());
+            
         }
         
-                
-        
     }
+    
     
     /**
      * Entry Point
@@ -192,7 +259,7 @@ public class EnrollmentSubSystem {
                 }
             }
             if(ESS != null){
-                ESS.start();
+                ESS.startUP();
             } else {
                 System.err.println("ESS FAILURE");
             }
@@ -202,9 +269,9 @@ public class EnrollmentSubSystem {
     
     /**
      * On Local MySQL server run the following:
-     *  CREATE DATABASE EnrollmentDB;
+     *  CREATE DATABASE enrollmentdb;
      *  CREATE USER 'EnrollmentUser'@'localhost' IDENTIFIED BY '';
-     *  GRANT ALL ON EnrollmentDB.* TO 'EnrollmentUser'@'locahost';
+     *  GRANT ALL ON enrollmentdb.* TO 'EnrollmentUser'@'locahost';
      * 
      *  Don't Forget To Close Connections
      * 
@@ -214,7 +281,7 @@ public class EnrollmentSubSystem {
     public static Connection getSQLConnection() throws SQLException{
         
         Connection con;
-        String url = "jdbc:mysql://localhost:3306/enrollmentdb";
+        String url = "jdbc:mysql://localhost:3306/enrollmentdb"; // database name: enrollmentdb
         String user = "EnrollmentUser";
         String pass = "";
         
@@ -222,8 +289,7 @@ public class EnrollmentSubSystem {
         if(con != null){
             System.out.println(con.toString());
         }else{
-            System.out.println("Connection Failed: " +
-            con.toString() );
+            System.out.println("Connection Failed: Connetcion == null");
         }
         
         return con;
@@ -307,5 +373,19 @@ public class EnrollmentSubSystem {
         }
         return bitArray;
     }
+    
+    public static boolean tableSQLExist(Connection con, String tableName) throws SQLException{
+        
+        PreparedStatement statement = con.prepareStatement("Select count(*) "
+                + "FROM information_schema.tables "
+                + "WHERE table_name = ? "
+                + "LIMIT 1; ");
+        
+        statement.setString(1, tableName);
+        
+        ResultSet RS = statement.executeQuery();
+        RS.next();
+        return RS.getInt(1) != 0;
+    } 
     
 }
