@@ -17,17 +17,30 @@ import javax.swing.JTextField;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * 
  */
 public class SignUpPanel extends JPanel{
     
-    String username;    
-    String password;
-    String name;
-    String email;
-    String major;
+    private String username;    
+    private String password;
+    private String passwordCon;
+    private String name;
+    private String email;
+    private String major;
+    
+    private JTextField firstNameInput;
+    private JTextField lastNameInput;
+    private JTextField passwordInput;
+    private JTextField confirmPasswordInput;
+    private JTextField emailInput;
+    private JTextField majorInput;
+    
 
     public SignUpPanel(Dimension size , ActionListener AL){
         
@@ -40,7 +53,7 @@ public class SignUpPanel extends JPanel{
 
         int containerHalfPoint = (int)(container.getWidth()/2);
         
-        //back button
+        //Sign Up Panel BACK button
         JButton back = new JButton("Back");
         back.setBounds( 10,
             10,
@@ -49,12 +62,11 @@ public class SignUpPanel extends JPanel{
         back.addActionListener(AL);
         back.setActionCommand("SignUp Back");
         container.add(back);
-
         
         //title
         JLabel title = new JLabel();
         title.setText("Create an Account");
-        title.setSize(100, 20);
+        title.setSize(120, 20);
         title.setBounds( (containerHalfPoint - (int)(title.getWidth()/2)),
                 (int)(container.getHeight() * 0.10),
                 title.getWidth(),
@@ -63,76 +75,77 @@ public class SignUpPanel extends JPanel{
         
         
         //username
-        JLabel unLabel = new JLabel();
-        unLabel.setText("Username:");
-        unLabel.setSize(100, 20);
-        unLabel.setBounds( (containerHalfPoint - (int)(unLabel.getWidth()/2)),
+        JLabel firstNameLabel = new JLabel();
+        firstNameLabel.setText("First Name: ");
+        firstNameLabel.setSize(100, 20);
+        firstNameLabel.setBounds((containerHalfPoint - (int)(firstNameLabel.getWidth()/2)),
                 (int)(container.getHeight() * 0.20),
-                unLabel.getWidth(),
-                unLabel.getHeight());
-        container.add(unLabel);
+                firstNameLabel.getWidth(),
+                firstNameLabel.getHeight());
+        container.add(firstNameLabel);
 
-        JTextField unInput = new JTextField();
-        unInput.setSize(100, 20);
-        unInput.setBounds( (containerHalfPoint - (int)(unInput.getWidth()/2)),
+        firstNameInput = new JTextField();
+        firstNameInput.setSize(100, 20);
+        firstNameInput.setBounds((containerHalfPoint - (int)(firstNameInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.25),
-                unInput.getWidth(),
-                unInput.getHeight());
-        container.add(unInput);
+                firstNameInput.getWidth(),
+                firstNameInput.getHeight());
+        container.add(firstNameInput);
         
         //password
-        JLabel pwLabel = new JLabel();
-        pwLabel.setText("Password:");
-        pwLabel.setSize(100,20);
-        pwLabel.setBounds( (containerHalfPoint - (int)(pwLabel.getWidth()/2)),
+        JLabel lastNameLabel = new JLabel();
+        
+        lastNameLabel.setText("Last Name: ");
+        lastNameLabel.setSize(100,20);
+        lastNameLabel.setBounds((containerHalfPoint - (int)(lastNameLabel.getWidth()/2)),
                 (int)(container.getHeight() * 0.3),
-                pwLabel.getWidth(),
-                pwLabel.getHeight());
-        container.add(pwLabel);
+                lastNameLabel.getWidth(),
+                lastNameLabel.getHeight());
+        container.add(lastNameLabel);
 
-        JTextField pwInput = new JTextField();
-        pwInput.setSize(100,20);
-        pwInput.setBounds( (containerHalfPoint - (int)(pwInput.getWidth()/2)),
+        lastNameInput = new JTextField();
+        lastNameInput.setSize(100,20);
+        lastNameInput.setBounds((containerHalfPoint - (int)(lastNameInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.35),
-                pwInput.getWidth(),
-                pwInput.getHeight());
-        container.add(pwInput);
+                lastNameInput.getWidth(),
+                lastNameInput.getHeight());
+        container.add(lastNameInput);
         
         //confirm password
-        JLabel pwconLabel = new JLabel();
-        pwconLabel.setText("Password:");
-        pwconLabel.setSize(100,20);
-        pwconLabel.setBounds( (containerHalfPoint - (int)(pwconLabel.getWidth()/2)),
+        JLabel passwordLabel = new JLabel();
+        passwordLabel.setText("Password:");
+        passwordLabel.setSize(100,20);
+        passwordLabel.setBounds((containerHalfPoint - (int)(passwordLabel.getWidth()/2)),
                 (int)(container.getHeight() * 0.4),
-                pwconLabel.getWidth(),
-                pwconLabel.getHeight());
-        container.add(pwconLabel);
+                passwordLabel.getWidth(),
+                passwordLabel.getHeight());
+        container.add(passwordLabel);
 
-        JTextField pwconInput = new JTextField();
-        pwconInput.setSize(100,20);
-        pwconInput.setBounds( (containerHalfPoint - (int)(pwconInput.getWidth()/2)),
+        passwordInput = new JTextField();
+        passwordInput.setSize(100,20);
+        passwordInput.setBounds((containerHalfPoint - (int)(passwordInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.45),
-                pwconInput.getWidth(),
-                pwconInput.getHeight());
-        container.add(pwconInput);
+                passwordInput.getWidth(),
+                passwordInput.getHeight());
+        container.add(passwordInput);
         
         //name
-        JLabel nameLabel = new JLabel();
-        nameLabel.setText("Name:");
-        nameLabel.setSize(100,20);
-        nameLabel.setBounds( (containerHalfPoint - (int)(nameLabel.getWidth()/2)),
+        JLabel confirmPasswordLabel = new JLabel();
+        confirmPasswordLabel.setText("Confirm Password:");
+        confirmPasswordLabel.setSize(120,20);
+        confirmPasswordLabel.setBounds((containerHalfPoint - (int)(confirmPasswordLabel.getWidth()/2)),
                 (int)(container.getHeight() * 0.5),
-                nameLabel.getWidth(),
-                nameLabel.getHeight());
-        container.add(nameLabel);
+                confirmPasswordLabel.getWidth(),
+                confirmPasswordLabel.getHeight());
+        container.add(confirmPasswordLabel);
 
-        JTextField nameInput = new JTextField();
-        nameInput.setSize(100,20);
-        nameInput.setBounds( (containerHalfPoint - (int)(nameInput.getWidth()/2)),
+        confirmPasswordInput = new JTextField();
+        confirmPasswordInput.setSize(100,20);
+        confirmPasswordInput.setBounds((containerHalfPoint - (int)(confirmPasswordInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.55),
-                nameInput.getWidth(),
-                nameInput.getHeight());
-        container.add(nameInput);
+                confirmPasswordInput.getWidth(),
+                confirmPasswordInput.getHeight());
+        container.add(confirmPasswordInput);
         
         //email
         JLabel emailLabel = new JLabel();
@@ -144,7 +157,7 @@ public class SignUpPanel extends JPanel{
                 emailLabel.getHeight());
         container.add(emailLabel);
         
-        JTextField emailInput = new JTextField();
+        emailInput = new JTextField();
         emailInput.setSize(100,20);
         emailInput.setBounds( (containerHalfPoint - (int)(emailInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.65),
@@ -162,7 +175,7 @@ public class SignUpPanel extends JPanel{
                 majorLabel.getHeight());
         container.add(majorLabel);
         
-        JTextField majorInput = new JTextField();
+        majorInput = new JTextField();
         majorInput.setSize(100, 20);
         majorInput.setBounds( (containerHalfPoint - (int)(majorInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.75),
@@ -180,13 +193,14 @@ public class SignUpPanel extends JPanel{
         
         ActionListener sumbimissionListener = evt ->{
             
-            username = unInput.getText();
-            password = pwInput.getText();
-            name = nameInput.getText();
+            username = firstNameInput.getText();
+            password = lastNameInput.getText();
+            passwordCon = passwordInput.getText();
+            name = confirmPasswordInput.getText();
             email = emailInput.getText();
             major = majorInput.getText();
             
-            if(username.isBlank() || password.isBlank() || name.isBlank() || email.isBlank()){
+            if(username.isBlank() || password.isBlank() || name.isBlank() || email.isBlank() || passwordCon.isBlank() ){
                     
                 JOptionPane.showMessageDialog( getParent(), 
                     "1 or more required fields empty", 
@@ -199,14 +213,37 @@ public class SignUpPanel extends JPanel{
                 //VALUES ((generated ID, not sure how this would work yet), 
                 //'"+name+"', '"+email+"', '"+username+"', '"+password+"', '"+major+"');
                 
-                
-                
-                
-                JOptionPane.showMessageDialog( getParent(), 
-                    "Account Created!\n"
-                    + "Click OK to return to menu screen",
-                    "Sign Up Success", 
-                    JOptionPane.PLAIN_MESSAGE);
+                if(password.equals(passwordCon)){
+                    
+                    byte[] salt = EnrollmentSubSystem.createSalt();
+                    byte[] hash = EnrollmentSubSystem.passwordHash(password, salt);
+                    
+                    String HashHex = EnrollmentSubSystem.bitArrayToHex(hash);
+                    String SaltHex = EnrollmentSubSystem.bitArrayToHex(salt);
+                    
+                    try{
+                    Connection con = EnrollmentSubSystem.getSQLConnection();
+                    Statement statement = con.createStatement();
+                    //String sql = "INSERT INTO students"
+                    //statement.executeUpdate(sql);
+                    
+                    } catch(SQLException ex) {
+                        
+                    }
+                    
+                    
+                    JOptionPane.showMessageDialog( getParent(), 
+                        "Account Created! \n " + 
+                        "Click OK to return to Login Screen",
+                        "Sign Up Success", 
+                        JOptionPane.PLAIN_MESSAGE);
+                    
+                } else {
+                    JOptionPane.showMessageDialog( getParent(), 
+                    "Password Confirmation does not match", 
+                    "Sign Up Failed", 
+                    JOptionPane.ERROR_MESSAGE);
+                }
                 
             }
         
@@ -220,7 +257,12 @@ public class SignUpPanel extends JPanel{
     }
     
     public void emptyTextFields(){
-        
+        this.emailInput.setText("");
+        this.majorInput.setText("");
+        this.confirmPasswordInput.setText("");
+        this.lastNameInput.setText("");
+        this.passwordInput.setText("");
+        this.firstNameInput.setText("");
     }
     
 }
