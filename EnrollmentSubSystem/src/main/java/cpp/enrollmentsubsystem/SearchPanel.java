@@ -5,8 +5,6 @@
 
 package cpp.enrollmentsubsystem;
 
-import javax.swing.JComboBox;
-import javax.swing.JCheckBox;
 /**
  *
  * @author nickafic
@@ -32,8 +30,6 @@ public class SearchPanel extends javax.swing.JFrame {
     public SearchPanel() {
         initComponents();
     }
-
-    @SuppressWarnings("unchecked")
                         
     private void initComponents() {
 

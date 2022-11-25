@@ -17,8 +17,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.swing.BoxLayout;
@@ -263,6 +261,7 @@ public class EnrollmentSubSystem {
                     }
                 }
             }
+            input.close();
             if(ESS != null){
                 ESS.startUP();
             } else {

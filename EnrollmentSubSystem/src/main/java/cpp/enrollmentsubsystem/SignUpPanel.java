@@ -7,13 +7,11 @@ package cpp.enrollmentsubsystem;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
@@ -73,7 +71,8 @@ public class SignUpPanel extends JFrame{
         pwLabel.setText("Password:");
         pwLabel.setBounds(165, 70, 70, 20);
         container.add(pwLabel);
-        JPasswordField pwInput = new JPasswordField();
+
+        JTextField pwInput = new JTextField();
         pwInput.setBounds(230, 70, 200, 20);
         container.add(pwInput);
         //name
