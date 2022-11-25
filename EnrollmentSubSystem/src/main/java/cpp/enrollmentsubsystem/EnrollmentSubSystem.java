@@ -220,6 +220,16 @@ public class EnrollmentSubSystem {
                     " ); ";
                 statement.executeUpdate(sql);
             }
+            if(!(tableSQLExist(con, "student_sections"))){
+                sql = "create table student_sections ( " +
+                    " sectionID varchar(10) not null, " +
+                    " studentID varchar(10) not null, " +
+                    " foreign key (sectionID) references sections(sectionID), " +
+                    " foreign key (studentID) references students(studentID), " +
+                    " primary key (sectionID, studentID) " +
+                    ");" ;
+            }
+
             con.close();
         } catch (SQLException ex) {
             

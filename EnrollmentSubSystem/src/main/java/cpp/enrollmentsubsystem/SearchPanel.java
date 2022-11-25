@@ -27,11 +27,11 @@ public class SearchPanel extends javax.swing.JFrame {
     /**
      * Creates new form SearchPanel
      */
-    public SearchPanel() {
-        initComponents();
+    public SearchPanel(boolean debugMode) {
+        initComponents(debugMode);
     }
                         
-    private void initComponents() {
+    private void initComponents(boolean debugMode) {
 
         searchLabel = new javax.swing.JLabel();
         subjectLabel = new javax.swing.JLabel();
@@ -46,7 +46,11 @@ public class SearchPanel extends javax.swing.JFrame {
         clearButton = new javax.swing.JButton();
         openCheck = new javax.swing.JCheckBox("Open classes only", true);
         
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        if(debugMode){
+            setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        } else {
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }
 
         searchLabel.setText("Course Search");
 
@@ -184,7 +188,7 @@ public class SearchPanel extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new SearchPanel().setVisible(true);
+                new SearchPanel(true).setVisible(true);
             }
         });
     }

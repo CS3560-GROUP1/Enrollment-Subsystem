@@ -25,6 +25,9 @@ public class HomePanel extends JFrame{
     
     private JPanel facePanel;
     private CardLayout layout;
+
+    private JLabel termLabel;
+    private JLabel usernameLabel;
     
     public HomePanel(){
         super();
@@ -52,6 +55,7 @@ public class HomePanel extends JFrame{
             topPanel.setBackground(Color.red);
             topPanel.setBounds(0, 0, size.width, (int)(size.getHeight() * 0.20));
 
+            //LEFT
             JPanel leftTopPanel = new JPanel();
             leftTopPanel.setBounds(0,0,size.width/2, topPanel.getHeight() );
             leftTopPanel.setBackground(Color.green);
@@ -62,24 +66,19 @@ public class HomePanel extends JFrame{
 
             JLabel myScheduleLabel = new JLabel("My Schedule - Term: ");
             leftTopPanel.add(myScheduleLabel);
-            JLabel termLabel = new JLabel("Mock Term 2020");
+            termLabel = new JLabel("Mock Term 2022");
             leftTopPanel.add(termLabel);
 
-            JLabel usernameLabel = new JLabel("Mock Name");
+            usernameLabel = new JLabel("Mock Name");
             leftTopPanel.add(usernameLabel);
 
-            JButton changeTermButton = new JButton("Change Term");
-            changeTermButton.setActionCommand("Change Term");
-            rightTopPanel.add(changeTermButton);
-
-
-            JPopupMenu menu = new JPopupMenu();
-
+            //RIGHT
             ActionListener menuListner = evt -> {
                 switch(evt.getActionCommand()){
                     case "Search" ->{
                         System.out.println(" Search" );
-                        new SearchPanel().setVisible(true);
+                        
+                        new SearchPanel(false).setVisible(true);
 
                     }
                     case "Enroll" ->{
@@ -94,6 +93,13 @@ public class HomePanel extends JFrame{
                     }
                 }
             };
+
+            JPopupMenu menu = new JPopupMenu();
+
+            JButton changeTermButton = new JButton("Change Term");
+            changeTermButton.setActionCommand("Change Term");
+            changeTermButton.addActionListener(menuListner);
+            rightTopPanel.add(changeTermButton);
 
             JMenuItem mi1 = new JMenuItem();
             mi1.setText("Search");
