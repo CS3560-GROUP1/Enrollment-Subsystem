@@ -4,7 +4,6 @@
  */
 package cpp.enrollmentsubsystem;
 
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -13,13 +12,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 /**
  *
  * @author lpera00
  */
-public class SignUpPanel extends JFrame{
+public class SignUpPanel extends JPanel{
     
     String username;    
     String password;
@@ -27,31 +25,20 @@ public class SignUpPanel extends JFrame{
     String email;
     String major;
 
-    
-    public SignUpPanel(){
+    public SignUpPanel(ActionListener AL){
         username = "";        
         password = "";
         name = "";
         email = "";
         major = "";
 
-        setSize(new Dimension(600, 400));
-        setLocationRelativeTo(null);
-        setTitle("Create Account");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
         JPanel container = new JPanel(null);
+        container.setSize(4000, 500);
         //back button
         JButton back = new JButton("Back");
         back.setBounds(10, 10, 70, 20);
-        back.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                //close this window and open menu window
-                String[] args = {};
-                EnrollmentSubSystem.main(args);
-                dispose();
-            }
-        });
+        back.addActionListener(AL);
+        back.setActionCommand("SignUp Back");
         container.add(back);
         //title
         JLabel title = new JLabel();
@@ -102,7 +89,7 @@ public class SignUpPanel extends JFrame{
         //submit button
         JButton submit = new JButton("Submit");
         submit.setBounds(275, 190, 80, 20);
-        submit.addActionListener(new ActionListener() {
+        submit.addActionListener(new ActionListener() { 
             public void actionPerformed(ActionEvent e) {
                 //assign entered values to variables
                 username = unInput.getText();
@@ -136,21 +123,12 @@ public class SignUpPanel extends JFrame{
                         "Sign Up Success", 
                         JOptionPane.PLAIN_MESSAGE);
                     alertFrame.dispose();
-                    String[] args = {};
-                    EnrollmentSubSystem.main(args);
-                    dispose();
-                }
+                    
             }
-        });
+        }});
         container.add(submit);
         add(container);
     }
     
-    
-    public static void main(String[] args){
-        SwingUtilities.invokeLater( () -> {
-            new SignUpPanel().setVisible(true);
-        });
-    }
    
 }

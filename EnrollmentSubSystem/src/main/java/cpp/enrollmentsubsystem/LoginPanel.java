@@ -143,8 +143,8 @@ public class LoginPanel extends JFrame{
                 }
                 
                 case "Create Account" -> {
-                    new SignUpPanel().setVisible(true);
-                    dispose();
+
+                    layout.show(facePanel, "signUP");
                     
                 }
                     
@@ -257,7 +257,12 @@ public class LoginPanel extends JFrame{
         
         facePanel.add(passwordRecoveryPanel, "password");
         
+        facePanel.add(new SignUpPanel(loginListener), "signUP");
+
         add(facePanel);
+
+
+
         layout.show(facePanel, "login");
     }
     

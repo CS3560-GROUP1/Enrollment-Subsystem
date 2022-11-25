@@ -4,6 +4,7 @@ package cpp.enrollmentsubsystem;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.security.NoSuchAlgorithmException;
@@ -94,8 +95,16 @@ public class EnrollmentSubSystem {
 
             JButton createAcct = new JButton(" 'Create Account' screen");
             createAcct.addActionListener((ActionEvent e) -> {
-                String[] args = {};
-                SignUpPanel.main(args);
+                JFrame tempFrame = new JFrame();
+                tempFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                tempFrame.setSize(500,500);
+                
+                ActionListener tempListener = evt -> {
+
+                };
+
+                tempFrame.add(new SignUpPanel(tempListener));
+                tempFrame.setVisible(true);
                 frame.dispose();
             });
             createAcct.setAlignmentX(Component.CENTER_ALIGNMENT);
