@@ -4,6 +4,7 @@
  */
 package cpp.enrollmentsubsystem;
 
+import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +16,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 /**
  *
@@ -35,54 +37,59 @@ public class HomePanel extends JFrame{
                 (int)(ScreenInformation.getWidth() * 0.6),
                 (int)(ScreenInformation.getHeight() * 0.5) 
         );
+        setSize(size);
        
         
         facePanel = new JPanel();
         layout = new CardLayout(0, 0);
         facePanel.setLayout(layout);
         
+        //HomePanel Container
         JPanel homePanel = new JPanel(null);
+        homePanel.setSize(size);
         
-        //Top Panel
+            //Top Panel
         JPanel topPanel = new JPanel();
         topPanel.setBackground(Color.red);
-        topPanel.setBounds(0, 0, size.width, (int)(size.getHeight() * 0.15));
+        topPanel.setBounds(0, 0, size.width, (int)(size.getHeight() * 0.20));
         homePanel.add(topPanel);
 
         
-        //Bottom Panel
-        JPanel bottomPanel = new JPanel();
-        
-        GridLayout gLayout = new GridLayout(20, 1, 2, 2);
-        bottomPanel.setLayout(gLayout);
+            //Bottom Panel - Set up will be moved to after a user logins to receive from where to pull home screen data.
+        JPanel bottomPanel = new JPanel(null);
         bottomPanel.setBackground(Color.blue);
+        bottomPanel.setBounds(0, topPanel.getHeight(), (size.width), (int)(size.height - topPanel.getHeight()));
         
-        JPanel usePanel;
-        for(int i=0; i< 20; i++){
-            usePanel = new JPanel();
-            usePanel.setSize((int)(size.getWidth() * 0.8), (int)(size.getHeight() * 0.15) );
-            usePanel.setBackground(new Color(i*5, i*10, i*12));
+            int entries = 20;
+            JPanel innerBottomPanel = new JPanel(null);
+            innerBottomPanel.setSize( (int)(size.getWidth() * 0.8), (entries * ((int)(size.getHeight() * 0.25)) ) ); // inner panell size set
+            innerBottomPanel.setPreferredSize(innerBottomPanel.getSize());
+
+            JPanel usePanel; // Will be moved to its own panel class
+            for(int i=0; i< entries; i++){
+                usePanel = new JPanel();
+                usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
+                usePanel.setBackground(new Color(i*5, i*10, i*12));
+
+                innerBottomPanel.add(usePanel);
+            }
+
+            JScrollPane bottomScrollPane = new JScrollPane(innerBottomPanel);
+            bottomScrollPane.setBackground(Color.blue);
+            bottomScrollPane.setBounds(10, 10, innerBottomPanel.getWidth() + 25, bottomPanel.getHeight() - 60);
             
-            bottomPanel.add(usePanel);
-        }
-                            
-        JScrollPane bottomScrollPane = new JScrollPane(bottomPanel);
-            int paddingInPixels = 20;
-            bottomScrollPane.setBounds(0, topPanel.getHeight(), (size.width - paddingInPixels), ((int)(size.height - topPanel.getHeight())) - paddingInPixels );
-            bottomScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-            
+        bottomPanel.add(bottomScrollPane);
+        
+        
+        homePanel.add(bottomPanel);
         
         //
-        homePanel.add(bottomScrollPane);
-        
         setSize(size);
         setResizable(false);
         setLocationRelativeTo(null);
       
         facePanel.add(homePanel, "home");
-        
         add(facePanel);
-        
     }
     
     public void startUp(){
