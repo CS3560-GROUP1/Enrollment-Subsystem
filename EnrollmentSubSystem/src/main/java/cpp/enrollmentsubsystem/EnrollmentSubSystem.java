@@ -166,7 +166,7 @@ public class EnrollmentSubSystem {
             }
             
             if(!(tableSQLExist(con, "logins"))){
-                sql = "create table Logins ( " +
+                sql = "create table logins ( " +
                     " username varchar(40) unique primary key, " +
                     " password_Hash varchar(64), " +
                     " password_Salt varchar(32), " +
@@ -175,7 +175,7 @@ public class EnrollmentSubSystem {
                     "); ";
                 statement.executeUpdate(sql);
                 
-                sql = "insert into Logins (username, password_Hash, password_Salt, studentID) " +
+                sql = "insert into logins (username, password_Hash, password_Salt, studentID) " +
                     " values " +
                     " ('Leonardo','E095F2330853CD6B3A5E2642E9E36569B30FCA0B24E20CD8312E6199F3AB1D27', '0B93FAD115938BCD4A1CAA27BFB6952A', '0'), " +
                     " ('Kimtaiyo','DC7DAC61C84B4E81CC28B37550C2602B0CB4FA35C1CD57BDCD14ADFA41F0A9FA', 'D03146554487FD9CDE36199251E6A811', '1'), " +
