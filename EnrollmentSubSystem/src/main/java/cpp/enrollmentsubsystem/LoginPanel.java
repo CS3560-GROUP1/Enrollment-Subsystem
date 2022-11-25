@@ -31,6 +31,8 @@ public class LoginPanel extends JFrame{
     private String username;
     private String password;
     
+    private SignUpPanel signUpPanel;
+    
     private JTextField usernameJTextField;
     private JTextField passwordJTextField;
     
@@ -45,8 +47,8 @@ public class LoginPanel extends JFrame{
         
         Dimension ScreenInformation = Toolkit.getDefaultToolkit().getScreenSize(); // Get ScreenSize
         Dimension size = new Dimension( 
-                (int)(ScreenInformation.getWidth() * 0.2),
-                (int)(ScreenInformation.getHeight() * 0.5) 
+                (int)(ScreenInformation.getWidth() * 0.3),
+                (int)(ScreenInformation.getHeight() * 0.6) 
         );
         setSize(size);
         setLocationRelativeTo(null);
@@ -147,7 +149,10 @@ public class LoginPanel extends JFrame{
                     layout.show(facePanel, "signUP");
                     
                 }
-                    
+                case "SignUp Back" -> {
+                    signUpPanel.emptyTextFields();
+                    layout.show(facePanel, "login");
+                }
                 default -> {
                     System.err.println(evt.toString());
                 }
@@ -256,8 +261,9 @@ public class LoginPanel extends JFrame{
         passwordRecoveryPanel.add(passRecBackButton,c);
         
         facePanel.add(passwordRecoveryPanel, "password");
+        signUpPanel = new SignUpPanel(size,loginListener);
         
-        facePanel.add(new SignUpPanel(loginListener), "signUP");
+        facePanel.add(signUpPanel, "signUP");
 
         add(facePanel);
 

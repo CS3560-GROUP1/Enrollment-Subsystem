@@ -103,7 +103,7 @@ public class EnrollmentSubSystem {
 
                 };
 
-                tempFrame.add(new SignUpPanel(tempListener));
+                tempFrame.add(new SignUpPanel( new Dimension(400,600) ,tempListener));
                 tempFrame.setVisible(true);
                 frame.dispose();
             });
