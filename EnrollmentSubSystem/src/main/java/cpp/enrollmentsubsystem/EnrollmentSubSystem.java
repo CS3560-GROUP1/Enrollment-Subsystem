@@ -119,6 +119,17 @@ public class EnrollmentSubSystem {
             sectionDetails.setAlignmentX(Component.CENTER_ALIGNMENT);
             debugPanel.add(sectionDetails);
             
+            JButton viewCart = new JButton(" 'View Cart' screen (MOCK)");
+            viewCart.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String[] args = {};
+                    CartPanel.main(args, null);
+                    frame.dispose();
+                }
+            });
+            viewCart.setAlignmentX(Component.CENTER_ALIGNMENT);
+            debugPanel.add(viewCart);
+            
             face.add(debugPanel, "debugPanel");
             layout.show(face, "debugPanel");
             frame.add(face);
@@ -201,6 +212,15 @@ public class EnrollmentSubSystem {
                     " department varchar(20) not null " +
                     " ); ";
                 statement.executeUpdate(sql);
+                
+                sql = "insert into professors (professorID, first_Name, last_Name, department) " +
+                    " values " + 
+                    " ('1', 'Tannaz', 'Rezaei Damavandi', 'Computer Science'), " +
+                    " ('2', 'Patrick', 'Polk', 'Philosophy'), " +
+                    " ('3', 'Sander', 'Eller', 'Computer Science'), " +
+                    " ('4', 'Paula', 'Propst', 'Music') " +
+                    " ; ";
+                statement.executeUpdate(sql);
             }
             if(!(tableSQLExist(con, "rooms"))){
                 sql = "create table rooms ( " +
@@ -208,6 +228,15 @@ public class EnrollmentSubSystem {
                     " enrollment_Capacity smallint not null default '0', " +
                     " wait_List_Capacity smallint not null default '0' " +
                     " );";
+                statement.executeUpdate(sql);
+                
+                sql = "insert into rooms (roomID, enrollment_Capacity, wait_List_Capacity) " +
+                    " values " +
+                    " ('2643', '35', '10'), " +
+                    " ('348', '30', '11'), " +
+                    " ('2005', '42', '15'), " +
+                    " ('1029', '28', '8') " +
+                    " ; ";
                 statement.executeUpdate(sql);
             }
             if(!(tableSQLExist(con, "courses"))){
@@ -217,6 +246,16 @@ public class EnrollmentSubSystem {
                     " units smallint not null " +
                     " );";
                 statement.executeUpdate(sql);
+                
+                sql = "insert into courses (courseID, course_Name, units) " + 
+                    " values " + 
+                    " ('3560', 'Obj-Oriented Design and Prog', '3'), " +
+                    " ('3500', 'Creative Prcss Theory Practice', '4'), " +
+                    " ('3750', 'Computers and Society', '3'), " +
+                    " ('1030', 'World of Music', '3') " +
+                    " ; ";
+                statement.executeUpdate(sql);
+                
             }
             if(!(tableSQLExist(con, "sections"))){
                 sql = "create table sections ( " +
@@ -230,6 +269,7 @@ public class EnrollmentSubSystem {
                     " foreign key (roomID) references rooms(roomID) " +
                     " ); ";
                 statement.executeUpdate(sql);
+
             }
             if(!(tableSQLExist(con, "enrolled_classes"))){
                 sql = "create table enrolled_classes (  " +

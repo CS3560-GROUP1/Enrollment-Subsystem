@@ -1,5 +1,7 @@
 package cpp.enrollmentsubsystem;
 
+import static cpp.enrollmentsubsystem.EnrollmentSubSystem.getSQLConnection;
+import java.sql.Connection;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -10,15 +12,15 @@ public class methods {
         
     }
 
-    public void createAccount(int id, String name, String major, String email, String username, int password){
+    public void createAccount(int id, String first_name, String last_name, String major){
         //create new student account
-        //INSERT INTO student (student_ID, student_name, student_major, student_email, student_username, student_password) VALUES (id, name, major, email, username, password);
+        //INSERT INTO students (studentID, first_Name, last_Name, major) VALUES (id, first_name, last_name, major);
     }
 
     public void logIn(String username, int password){
         //authenticate username and password input
         //password will be hashed and compared to the hashes stored in the databse
-        //SELECT COUNT(student_ID) FROM student WHERE student_username = username AND student_password = password;
+        //SELECT COUNT(student_ID) FROM students WHERE student_username = username AND student_password = password;
         ArrayList<Integer> matches = new ArrayList<Integer>(); //query should return an ArrayList with only 1 value
         if(matches.get(0) > 0){
             //login success
@@ -67,11 +69,11 @@ public class methods {
         boolean conflictCheck = false;
         //all this student's currently and previously enrolled courses
         //("currently" or "previously" enrolled is denoted by the "term" attribute):
-        //SELECT course_ID FROM enrollment WHERE enrollment.student_ID = '"+cart.getStudent()+"';
+        //SELECT course_ID FROM enrolled_classes WHERE enrolled_classes.student_ID = '"+cart.getStudent()+"';
         ArrayList<Integer> enrolledCourses = new ArrayList<Integer>(); //query results will be added to ArrayLists
         //prerequisite conflict
             //get all the prerequisites from the seciton being checked's course:
-            //SELECT prerequisite_ID FROM course WHERE course.course_ID = '"+section.getCourse().getCourseID()+"';
+            //SELECT prerequisite_ID FROM courses WHERE courses.course_ID = '"+section.getCourse().getCourseID()+"';
             ArrayList<Integer> coursePrerequisites = new ArrayList<Integer>();
             //only do this check if the course has prerequisites
             if(coursePrerequisites.size() > 0){
@@ -100,10 +102,10 @@ public class methods {
             }
         //schedule conflict
             //get the time for each section student is enrolled in this term 
-            //("course_section" is the database table, "section" is the section being checked):
-            //SELECT time FROM course_section INNER JOIN enrollment ON course_section.course_ID = enrollment.course_ID 
-            //AND course_section.section_ID = enrollment.section_ID AND enrollment.student_ID = '"+cart.getStudent()+"' 
-            //AND course_section.term = '"+section.getTerm()+"';
+            //("sections" is the database table, "section" is the section being checked):
+            //SELECT time FROM sections INNER JOIN enrolled_classes ON sections.course_ID = enrolled_classes.course_ID 
+            //AND sections.section_ID = enrolled_classes.section_ID AND enrolled_classes.student_ID = '"+cart.getStudent()+"' 
+            //AND sections.term = '"+section.getTerm()+"';
             ArrayList<String> enrolledTimes = new ArrayList<String>();
             //compare each enrolled time this term to that of the section being checked; if any match, there is a conflict
             if(enrolledTimes.size() > 0){
@@ -116,10 +118,10 @@ public class methods {
             }
         //max units conflict
             //get the units for each section student is enrolled in this term:
-            //SELECT units FROM course INNER JOIN enrollment ON course.course_ID = enrollment.course_ID 
-            //INNER JOIN course_section ON enrollment.section_ID = course_section.section_ID 
-            //AND enrollment.course_ID = course_section.course_ID 
-            //AND enrollment.student_ID = '"+cart.getStudent()+"' AND course_section.term = '"+section.getTerm()+"';
+            //SELECT units FROM courses INNER JOIN enrolled_classes ON courses.course_ID = enrolled_classes.course_ID 
+            //INNER JOIN course_section ON enrolled_classes.section_ID = course_section.section_ID 
+            //AND enrolled_classes.course_ID = course_section.course_ID 
+            //AND enrolled_classes.student_ID = '"+cart.getStudent()+"' AND course_section.term = '"+section.getTerm()+"';
             ArrayList<Integer> enrolledUnits = new ArrayList<Integer>();
             //add all units student is enrolled in this term to the units of the seciton being checked
             //if this total > max allowed units, there is a unit conflict
@@ -138,7 +140,7 @@ public class methods {
         //enrollment is full
         //(this checks if both enrollment and waitlist capacities are full, not each separately)
             //count number of students enrolled in this section
-            //SELECT COUNT(student_ID) FROM enrollment WHERE course_ID = '"+section.getCourse().getCourseID()+"' 
+            //SELECT COUNT(student_ID) FROM enrolled_classes WHERE course_ID = '"+section.getCourse().getCourseID()+"' 
             //AND section_ID = '"+section.getNumber()+"';
             //this should return an ArrayList with only 1 value
             ArrayList<Integer> numEnrolled = new ArrayList<Integer>();
@@ -155,24 +157,41 @@ public class methods {
 
     public void removeFromCart(Section section, CourseCart cart){
         //remove selected section from student's cart
+        //DELETE FROM student_cart_entries WHERE student_cart_entries.student_ID = '"+cart.getStudent().getID()+"'
+        //AND student_cart_entries.course_ID = '"+section.getCourse().getCourseID()+"'
+        //AND student_cart_entries.section_ID = '"+section.getNumber()+"';
+        System.out.println("remove from cart called");
+        System.out.println("section name: " + section.getCourse().getName());
     }
 
     public void viewCart(CourseCart cart) {
+        
     }
 
     public void finalizeCart(CourseCart cart){
+        System.out.println("finalize cart called");
         //iterate over all sections in student's cart and enroll student in each section
-        for (int i = 0; i < cart.courses.length; i++) {
-            enroll(cart.student, cart.courses[i]);
+        if(cart != null){
+            if(cart.courses.length > 0){
+                for (int i = 0; i < cart.courses.length; i++) {
+                    enroll(cart.student, cart.courses[i]);
+                }
+            }
         }
     }
 
     public void enroll(Student student, Section section){
         //enroll student in section
+        //INSERT INTO enrolled_classes (student_ID, course_ID, section_ID)
+        //VALUES ('"+student.getID()+"', '"+section.getCourse().getCourseID()+"', '"+section.getNumber()+"');
+        System.out.println("enroll "+ student.getName()+" in "+section.getCourse().getName());
     }
 
     public void dropSection(Student student, Section section){
         //drop enrolled section
+        //DELETE FROM enrolled_classes WHERE enrolled_classes.student_ID = '"+student.getID()+"'
+        //AND enrolled_classes.course_ID = '"+section.getCourse().getCourseID()+"'
+        //AND enrolled_classes.section_ID = '"+section.getNumber()+"';
     }
 
     public void viewSchedule(Student student){

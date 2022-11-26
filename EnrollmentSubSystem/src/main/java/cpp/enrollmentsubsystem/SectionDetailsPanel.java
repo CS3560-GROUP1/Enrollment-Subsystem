@@ -78,7 +78,7 @@ public class SectionDetailsPanel extends JFrame{
         }
         setSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
-        setTitle("Create Account");
+        setTitle("Section Details");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 
         JPanel container = new JPanel(null);
