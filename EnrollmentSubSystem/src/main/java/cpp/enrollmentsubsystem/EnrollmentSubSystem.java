@@ -119,6 +119,17 @@ public class EnrollmentSubSystem {
             sectionDetails.setAlignmentX(Component.CENTER_ALIGNMENT);
             debugPanel.add(sectionDetails);
             
+            JButton viewCart = new JButton(" 'View Cart' screen (MOCK)");
+            viewCart.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String[] args = {};
+                    CartPanel.main(args, null);
+                    frame.dispose();
+                }
+            });
+            viewCart.setAlignmentX(Component.CENTER_ALIGNMENT);
+            debugPanel.add(viewCart);
+            
             face.add(debugPanel, "debugPanel");
             layout.show(face, "debugPanel");
             frame.add(face);
