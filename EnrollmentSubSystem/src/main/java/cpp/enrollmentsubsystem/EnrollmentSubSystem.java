@@ -162,6 +162,7 @@ public class EnrollmentSubSystem {
                     " );";
                 statement.executeUpdate(sql);
                 
+                //MOCK DATA
                 sql = "insert into students (studentID, first_Name, last_Name, major) " +
                     " values" +
                     " ('0','Leonardo','D','CompSci'), " +
@@ -182,6 +183,7 @@ public class EnrollmentSubSystem {
                     "); ";
                 statement.executeUpdate(sql);
                 
+                //MOCK DATA
                 sql = "insert into logins (username, password_Hash, password_Salt, studentID) " +
                     " values " +
                     " ('Leonardo','E095F2330853CD6B3A5E2642E9E36569B30FCA0B24E20CD8312E6199F3AB1D27', '0B93FAD115938BCD4A1CAA27BFB6952A', '0'), " +
@@ -229,7 +231,7 @@ public class EnrollmentSubSystem {
                     " ); ";
                 statement.executeUpdate(sql);
             }
-            if(!(tableSQLExist(con, "student_sections"))){
+            if(!(tableSQLExist(con, "enrolled_classes"))){
                 sql = "create table student_sections ( " +
                     " sectionID varchar(10) not null, " +
                     " studentID varchar(10) not null, " +
@@ -237,6 +239,30 @@ public class EnrollmentSubSystem {
                     " foreign key (studentID) references students(studentID), " +
                     " primary key (sectionID, studentID) " +
                     ");" ;
+                statement.executeUpdate(sql);
+            }
+            if(!(tableSQLExist(con, "student_cart_entries"))){
+                sql = "create table student_cart_entries ( " +
+                    " SCEID int auto_increment unique not null primary key, " +
+                    " studentID varchar(10) not null, " +
+                    " sectionID varchar(10) " +
+                    " ); ";
+                statement.executeUpdate(sql);
+            }
+            if(!(tableSQLExist(con, "section_schedules"))){
+                sql = "create table section_schedules ( " +
+                    "	sectionID varchar(10) not null primary key, " +
+                    " start_time time, " +
+                    " end_time time, " +
+                    " Monday BIT, " +
+                    " Tuesday BIT, " +
+                    " Wendsday BIT, " +
+                    " Thursday BIT, " +
+                    " Friday BIT, " +
+                    " Saturday BIT, " +
+                    " Sunday BIT " +
+                    " ); ";
+                statement.executeUpdate(sql);
             }
 
             con.close();
