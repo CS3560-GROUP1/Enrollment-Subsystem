@@ -149,7 +149,7 @@ public class LoginPanel extends JFrame{
                     layout.show(facePanel, "signUP");
                     
                 }
-                case "SignUp Back" -> {
+                case "SignUp Back", "SignUp Submit" -> {
                     signUpPanel.emptyTextFields();
                     layout.show(facePanel, "login");
                 }

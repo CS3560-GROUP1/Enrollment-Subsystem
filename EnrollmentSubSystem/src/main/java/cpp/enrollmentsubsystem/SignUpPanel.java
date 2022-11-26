@@ -182,8 +182,11 @@ public class SignUpPanel extends JPanel{
                 (int)(container.getHeight() * 0.85),
                 submit.getWidth(),
                 submit.getHeight());
+        submit.setActionCommand("SignUp Submit");
         
         ActionListener sumbimissionListener = evt ->{
+            
+            int confirm = 1;
             
             String firstName = firstNameInput.getText();
             String lastName = lastNameInput.getText();
@@ -231,11 +234,14 @@ public class SignUpPanel extends JPanel{
                             
                             row = statement.executeUpdate();
                             if(row != 0){
-                                JOptionPane.showMessageDialog( getParent(), 
+                                
+                                confirm = JOptionPane.showConfirmDialog( getParent(), 
                                     "Account Created! \n " + 
                                     "Click OK to return to Login Screen",
                                     "Sign Up Success", 
                                     JOptionPane.PLAIN_MESSAGE);
+                                System.out.println(confirm);
+                                
                             } else{
                                 System.err.println("Unknow Error Insert fail - no rows affected (logins) ");
                             }
@@ -244,6 +250,7 @@ public class SignUpPanel extends JPanel{
                             System.err.println("Unknow Error Insert fail - no rows affected");
                         } // IF
                         
+                        con.close();
                     } catch(SQLException ex) {
                         System.err.println(ex.toString());
                     }
@@ -255,6 +262,10 @@ public class SignUpPanel extends JPanel{
                     JOptionPane.ERROR_MESSAGE);
                     
                 } // IF
+                
+                if(confirm != 1){
+                    AL.actionPerformed(evt);
+                }
                 
             }
         
