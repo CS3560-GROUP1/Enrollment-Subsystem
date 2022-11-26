@@ -232,7 +232,7 @@ public class EnrollmentSubSystem {
                 statement.executeUpdate(sql);
             }
             if(!(tableSQLExist(con, "enrolled_classes"))){
-                sql = "create table enrolled_classes ( " +
+                sql = "create table enrolled_classes (  " +
                     " sectionID varchar(10) not null, " +
                     " studentID varchar(10) not null, " +
                     " foreign key (sectionID) references sections(sectionID), " +
