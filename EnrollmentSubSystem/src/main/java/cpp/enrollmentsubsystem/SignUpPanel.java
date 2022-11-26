@@ -27,20 +27,12 @@ import java.sql.Statement;
  */
 public class SignUpPanel extends JPanel{
     
-    private String username;    
-    private String password;
-    private String passwordCon;
-    private String name;
-    private String email;
-    private String major;
-    
     private JTextField firstNameInput;
     private JTextField lastNameInput;
     private JTextField passwordInput;
     private JTextField confirmPasswordInput;
-    private JTextField emailInput;
+    private JTextField studentIDInput;
     private JTextField majorInput;
-    
 
     public SignUpPanel(Dimension size , ActionListener AL){
         
@@ -148,22 +140,22 @@ public class SignUpPanel extends JPanel{
         container.add(confirmPasswordInput);
         
         //email
-        JLabel emailLabel = new JLabel();
-        emailLabel.setText("Email:");
-        emailLabel.setSize(100,20);
-        emailLabel.setBounds( (containerHalfPoint - (int)(emailLabel.getWidth()/2)),
+        JLabel studentIDLabel = new JLabel();
+        studentIDLabel.setText("StudentID: ");
+        studentIDLabel.setSize(100,20);
+        studentIDLabel.setBounds((containerHalfPoint - (int)(studentIDLabel.getWidth()/2)),
                 (int)(container.getHeight() * 0.6),
-                emailLabel.getWidth(),
-                emailLabel.getHeight());
-        container.add(emailLabel);
+                studentIDLabel.getWidth(),
+                studentIDLabel.getHeight());
+        container.add(studentIDLabel);
         
-        emailInput = new JTextField();
-        emailInput.setSize(100,20);
-        emailInput.setBounds( (containerHalfPoint - (int)(emailInput.getWidth()/2)),
+        studentIDInput = new JTextField();
+        studentIDInput.setSize(100,20);
+        studentIDInput.setBounds((containerHalfPoint - (int)(studentIDInput.getWidth()/2)),
                 (int)(container.getHeight() * 0.65),
-                emailInput.getWidth(),
-                emailInput.getHeight());
-        container.add(emailInput);
+                studentIDInput.getWidth(),
+                studentIDInput.getHeight());
+        container.add(studentIDInput);
         
         //major
         JLabel majorLabel = new JLabel();
@@ -193,14 +185,14 @@ public class SignUpPanel extends JPanel{
         
         ActionListener sumbimissionListener = evt ->{
             
-            username = firstNameInput.getText();
-            password = lastNameInput.getText();
-            passwordCon = passwordInput.getText();
-            name = confirmPasswordInput.getText();
-            email = emailInput.getText();
-            major = majorInput.getText();
+            String firstName = firstNameInput.getText();
+            String lastName = lastNameInput.getText();
+            String password = passwordInput.getText();
+            String passwordConfirmation = confirmPasswordInput.getText();
+            String studentID = studentIDInput.getText();
+            String major = majorInput.getText();
             
-            if(username.isBlank() || password.isBlank() || name.isBlank() || email.isBlank() || passwordCon.isBlank() ){
+            if(firstName.isBlank() || password.isBlank() || lastName.isBlank() || studentID.isBlank() || passwordConfirmation.isBlank() || major.isBlank() ){
                     
                 JOptionPane.showMessageDialog( getParent(), 
                     "1 or more required fields empty", 
@@ -208,12 +200,8 @@ public class SignUpPanel extends JPanel{
                     JOptionPane.ERROR_MESSAGE);
                 
             }else{
-                //create new row in student table in database and populate it with the entered information
-                //INSERT INTO student (student_ID, student_name, student_email, student_username, student_password, student_major)
-                //VALUES ((generated ID, not sure how this would work yet), 
-                //'"+name+"', '"+email+"', '"+username+"', '"+password+"', '"+major+"');
                 
-                if(password.equals(passwordCon)){
+                if(password.equals(passwordConfirmation)){
                     
                     byte[] salt = EnrollmentSubSystem.createSalt();
                     byte[] hash = EnrollmentSubSystem.passwordHash(password, salt);
@@ -222,28 +210,51 @@ public class SignUpPanel extends JPanel{
                     String SaltHex = EnrollmentSubSystem.bitArrayToHex(salt);
                     
                     try{
-                    Connection con = EnrollmentSubSystem.getSQLConnection();
-                    Statement statement = con.createStatement();
-                    //String sql = "INSERT INTO students"
-                    //statement.executeUpdate(sql);
-                    
-                    } catch(SQLException ex) {
+                        Connection con = EnrollmentSubSystem.getSQLConnection();
                         
+                        String sql = "INSERT INTO students (first_Name, last_Name, studentID, major) VALUES (?,?,?,?);";
+                        PreparedStatement statement = con.prepareStatement(sql);
+                        statement.setString(1, firstName);
+                        statement.setString(2, lastName);
+                        statement.setString(3, studentID);
+                        statement.setString(4, major);
+                        
+                        int row = statement.executeUpdate();
+                        if(row != 0){
+                            
+                            sql = "INSERT INTO logins (studentID, username, password_Hash, password_Salt) VALUES (?,?,?,?)";
+                            statement = con.prepareStatement(sql);
+                            statement.setString(1, studentID);
+                            statement.setString(2, firstName);
+                            statement.setString(3, HashHex);
+                            statement.setString(4, SaltHex);
+                            
+                            row = statement.executeUpdate();
+                            if(row != 0){
+                                JOptionPane.showMessageDialog( getParent(), 
+                                    "Account Created! \n " + 
+                                    "Click OK to return to Login Screen",
+                                    "Sign Up Success", 
+                                    JOptionPane.PLAIN_MESSAGE);
+                            } else{
+                                System.err.println("Unknow Error Insert fail - no rows affected (logins) ");
+                            }
+                            
+                        } else {
+                            System.err.println("Unknow Error Insert fail - no rows affected");
+                        } // IF
+                        
+                    } catch(SQLException ex) {
+                        System.err.println(ex.toString());
                     }
-                    
-                    
-                    JOptionPane.showMessageDialog( getParent(), 
-                        "Account Created! \n " + 
-                        "Click OK to return to Login Screen",
-                        "Sign Up Success", 
-                        JOptionPane.PLAIN_MESSAGE);
-                    
                 } else {
+                    
                     JOptionPane.showMessageDialog( getParent(), 
                     "Password Confirmation does not match", 
                     "Sign Up Failed", 
                     JOptionPane.ERROR_MESSAGE);
-                }
+                    
+                } // IF
                 
             }
         
@@ -257,7 +268,7 @@ public class SignUpPanel extends JPanel{
     }
     
     public void emptyTextFields(){
-        this.emailInput.setText("");
+        this.studentIDInput.setText("");
         this.majorInput.setText("");
         this.confirmPasswordInput.setText("");
         this.lastNameInput.setText("");
