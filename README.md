@@ -39,4 +39,5 @@
     - [ ] Sections Mock Data
     - [ ] Students Mock Data
 
+LOGIN PASSWORD is NAME with Initial Capital
 
