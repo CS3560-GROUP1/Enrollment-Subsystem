@@ -21,7 +21,9 @@ import javax.swing.SwingUtilities;
  */
 public class SectionDetailsPanel extends JFrame{
         
-    public SectionDetailsPanel(Section section, CourseCart cart){
+    public SectionDetailsPanel(Section section, CourseCart cart,
+            ArrayList<String> sectionIDs, ArrayList<String> courseIDs, 
+            ArrayList<String> courseNames, String searchTerm, String searchCourseNum){
         //have to use final variables to avoid errors when passing to add function
         final Section displaySection = new Section();
         final CourseCart displayCart = new CourseCart();
@@ -87,9 +89,10 @@ public class SectionDetailsPanel extends JFrame{
         back.setBounds(10, 10, 70, 20);
         back.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                //close this window and open menu window
+                //close this window and reload search window
                 String[] args = {};
-                EnrollmentSubSystem.main(args);
+                SearchResultPanel.main(args, sectionIDs, courseIDs, 
+                        courseNames, searchTerm, searchCourseNum);
                 dispose();
             }
         });
@@ -185,7 +188,7 @@ public class SectionDetailsPanel extends JFrame{
         else{
                 enrolled.setText("0");
         }
-        enrolled.setText("30"); //for testing purposes we will hard code this for now
+        //enrolled.setText("30"); //for testing purposes we will hard code this for now
         enrolled.setBounds(500, 220, 200, 20);
         container.add(enrolled);
         //#waitlisted
@@ -241,7 +244,7 @@ public class SectionDetailsPanel extends JFrame{
         container.add(prerequsitesLabel);
         JLabel prerequsites = new JLabel();
         //if course has no prerequisites
-        if(displaySection.getCourse().getPrerequisites().length == 0){
+        if(displaySection.getCourse().getPrerequisites() == (null)){
             prerequsites.setText("none");
         }
         else{
@@ -280,9 +283,12 @@ public class SectionDetailsPanel extends JFrame{
         add(container);
     }
     
-     public static void main(String[] args, Section section, CourseCart cart){
+     public static void main(String[] args, Section section, CourseCart cart,
+            ArrayList<String> sectionIDs, ArrayList<String> courseIDs, 
+            ArrayList<String> courseNames, String searchTerm, String searchCourseNum){
         SwingUtilities.invokeLater( () -> {
-            new SectionDetailsPanel(section, cart).setVisible(true);
+            new SectionDetailsPanel(section, cart, sectionIDs, courseIDs, 
+            courseNames, searchTerm, searchCourseNum).setVisible(true);
         });
     }
 }

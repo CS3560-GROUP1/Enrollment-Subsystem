@@ -110,14 +110,14 @@ public class EnrollmentSubSystem {
             createAcct.setAlignmentX(Component.CENTER_ALIGNMENT);
             debugPanel.add(createAcct);
 
-            JButton sectionDetails = new JButton(" 'Section Details' screen (MOCK)");
-            sectionDetails.addActionListener((ActionEvent e) -> {
-                String[] args = {};
-                SectionDetailsPanel.main(args, null, null);
-                frame.dispose();
-            });
-            sectionDetails.setAlignmentX(Component.CENTER_ALIGNMENT);
-            debugPanel.add(sectionDetails);
+//            JButton sectionDetails = new JButton(" 'Section Details' screen (MOCK)");
+//            sectionDetails.addActionListener((ActionEvent e) -> {
+//                String[] args = {};
+//                SectionDetailsPanel.main(args, null, null);
+//                frame.dispose();
+//            });
+//            sectionDetails.setAlignmentX(Component.CENTER_ALIGNMENT);
+//            debugPanel.add(sectionDetails);
             
             JButton viewCart = new JButton(" 'View Cart' screen (MOCK)");
             viewCart.addActionListener(new ActionListener() {
@@ -251,12 +251,12 @@ public class EnrollmentSubSystem {
                 //sql = "INSERT INTO courses (courseID, course_Name, units, term)";
                 //statement.executeUpdate(sql);
                 
-                sql = "insert into courses (courseID, course_Name, units) " + 
+                sql = "insert into courses (courseID, course_Name, units, term) " + 
                     " values " + 
-                    " ('3560', 'Obj-Oriented Design and Prog', '3'), " +
-                    " ('3500', 'Creative Prcss Theory Practice', '4'), " +
-                    " ('3750', 'Computers and Society', '3'), " +
-                    " ('1030', 'World of Music', '3') " +
+                    " ('3560', 'Obj-Oriented Design and Prog', '3', 'FALL'), " +
+                    " ('3500', 'Creative Prcss Theory Practice', '4', 'FALL'), " +
+                    " ('3750', 'Computers and Society', '3', 'SPRING'), " +
+                    " ('1030', 'World of Music', '3', 'SUMMER') " +
                     " ; ";
                 statement.executeUpdate(sql);
                 
@@ -309,12 +309,27 @@ public class EnrollmentSubSystem {
                     " end_time time, " +
                     " Monday BIT, " +
                     " Tuesday BIT, " +
-                    " Wendsday BIT, " +
+                    " Wednesday BIT, " +
                     " Thursday BIT, " +
                     " Friday BIT, " +
                     " Saturday BIT, " +
                     " Sunday BIT " +
                     " ); ";
+                statement.executeUpdate(sql);
+                
+                /*
+                1. 5:30PM-6:45PM MW
+                2. 4:00PM-5:00PM MWF
+                3. 1:00PM-2:15PM TuTh
+                4. 2:30PM-3:30PM MTuW
+                */
+                sql = "insert into section_schedules (sectionID, start_time, end_time, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday) " + 
+                    " values " + 
+                    " ('1', '17:30', '18:45', 1, 0, 1, 0, 0, 0, 0), " +
+                    " ('2', '16:00', '17:00', 1, 0, 1, 0, 1, 0, 0), " +
+                    " ('3', '13:00', '14:15', 0, 1, 0, 1, 0, 0, 0), " +
+                    " ('4', '14:30', '15:30', 1, 1, 1, 0, 0, 0, 0) " +
+                    " ; ";
                 statement.executeUpdate(sql);
             }
 
