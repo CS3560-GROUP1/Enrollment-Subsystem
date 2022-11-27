@@ -157,7 +157,10 @@ public class SearchPanel extends javax.swing.JFrame {
     }                                           
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {                                         
-
+        System.out.println(termCombo.getItemAt(termCombo.getSelectedIndex()));
+        methods m = new methods();
+        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText());
+        dispose();
     }    
     
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {

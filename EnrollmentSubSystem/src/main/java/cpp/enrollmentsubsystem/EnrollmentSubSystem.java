@@ -269,6 +269,15 @@ public class EnrollmentSubSystem {
                     " foreign key (roomID) references rooms(roomID) " +
                     " ); ";
                 statement.executeUpdate(sql);
+                
+                sql = "insert into sections (sectionID, courseID, professorID, term, roomID) " + 
+                    " values " + 
+                    " ('1', '3560', '1', 'FALL', '2643'), " +
+                    " ('2', '3500', '2', 'FALL', '348'), " +
+                    " ('3', '3750', '3', 'SPRING', '2005'), " +
+                    " ('4', '1030', '4', 'SUMMER', '1029') " +
+                    " ; ";
+                statement.executeUpdate(sql);
 
             }
             if(!(tableSQLExist(con, "enrolled_classes"))){

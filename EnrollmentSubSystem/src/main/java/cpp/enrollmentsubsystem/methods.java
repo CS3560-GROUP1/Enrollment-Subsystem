@@ -2,6 +2,10 @@ package cpp.enrollmentsubsystem;
 
 import static cpp.enrollmentsubsystem.EnrollmentSubSystem.getSQLConnection;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -41,8 +45,72 @@ public class methods {
         }
     }
 
-    public void search(String subject, String courseNum){
+    public void search(String term, String courseNum){
         //search for class by choosing a subject and inputting a course number
+        try {
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "";
+            String[] args = {};
+            if(courseNum.isBlank()){
+                //if only term is chosen
+                sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "';";
+                ResultSet result = statement.executeQuery(sql);
+                ArrayList<String> sectionIDs = new ArrayList<String>();
+                while(result.next()){
+                    System.out.println("sectionID: "+result.getString("sectionID"));
+                    sectionIDs.add(result.getString("sectionID"));
+                }
+                sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "';";
+                result = statement.executeQuery(sql);
+                ArrayList<String> courseIDs = new ArrayList<String>();
+                while(result.next()){
+                    System.out.println("courseID: "+result.getString("courseID"));
+                    courseIDs.add(result.getString("courseID"));
+                }
+                ArrayList<String> courseNames = new ArrayList<String>();
+                for(int i = 0; i < courseIDs.size(); i++){
+                    sql = "SELECT courses.course_Name FROM courses WHERE courses.courseID = '" + courseIDs.get(i) + "';";
+                    result = statement.executeQuery(sql);
+                    while(result.next()){
+                        System.out.println("course name: "+result.getString("course_Name"));
+                        courseNames.add(result.getString("course_Name"));
+                    }
+                }
+                SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
+            }
+            else{
+                //if course num is also specified
+                sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                ResultSet result = statement.executeQuery(sql);
+                ArrayList<String> sectionIDs = new ArrayList<String>();
+                while(result.next()){
+                    System.out.println("sectionID: "+result.getString("sectionID"));
+                    sectionIDs.add(result.getString("sectionID"));
+                }
+                sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                result = statement.executeQuery(sql);
+                ArrayList<String> courseIDs = new ArrayList<String>();
+                while(result.next()){
+                    System.out.println("courseID: "+result.getString("courseID"));
+                    courseIDs.add(result.getString("courseID"));
+                }
+                ArrayList<String> courseNames = new ArrayList<String>();
+                for(int i = 0; i < courseIDs.size(); i++){
+                    sql = "SELECT courses.course_Name FROM courses WHERE courses.courseID = '" + courseIDs.get(i) + "';";
+                    result = statement.executeQuery(sql);
+                    while(result.next()){
+                        System.out.println("course name: "+result.getString("course_Name"));
+                        courseNames.add(result.getString("course_Name"));
+                    }
+                }
+                SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
+            }
+            con.close();
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
     }
 
     public void addToCart(Section section, CourseCart cart){
