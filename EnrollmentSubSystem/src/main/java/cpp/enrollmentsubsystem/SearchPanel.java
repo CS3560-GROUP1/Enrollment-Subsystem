@@ -59,7 +59,7 @@ public class SearchPanel extends javax.swing.JFrame {
 
         subjectLabel.setText("Subject");
 
-        subjectCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        subjectCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Select", "Computer Science", "Philosophy", "Music", "Civil Engineering" }));
 
         courseNumLabel.setText("Course Number");
 
@@ -159,7 +159,7 @@ public class SearchPanel extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {                                         
         System.out.println(termCombo.getItemAt(termCombo.getSelectedIndex()));
         methods m = new methods();
-        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText());
+        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText(), subjectCombo.getItemAt(subjectCombo.getSelectedIndex()));
         dispose();
     }    
     

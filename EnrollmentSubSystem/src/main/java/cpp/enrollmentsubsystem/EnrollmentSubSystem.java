@@ -244,6 +244,7 @@ public class EnrollmentSubSystem {
                     " courseID varchar(10) unique not null primary key, " +
                     " course_Name varchar(30) not null, " +
                     " units smallint not null, " +
+                    " subject varchar(25) not null, " +
                     " term varchar(12) not null" +
                     " );";
                 statement.executeUpdate(sql);
@@ -251,12 +252,12 @@ public class EnrollmentSubSystem {
                 //sql = "INSERT INTO courses (courseID, course_Name, units, term)";
                 //statement.executeUpdate(sql);
                 
-                sql = "insert into courses (courseID, course_Name, units, term) " + 
+                sql = "insert into courses (courseID, course_Name, units, subject, term) " + 
                     " values " + 
-                    " ('3560', 'Obj-Oriented Design and Prog', '3', 'FALL'), " +
-                    " ('3500', 'Creative Prcss Theory Practice', '4', 'FALL'), " +
-                    " ('3750', 'Computers and Society', '3', 'SPRING'), " +
-                    " ('1030', 'World of Music', '3', 'SUMMER') " +
+                    " ('3560', 'Obj-Oriented Design and Prog', '3', 'Computer Science', 'FALL'), " +
+                    " ('3500', 'Creative Prcss Theory Practice', '4', 'Philosophy', 'FALL'), " +
+                    " ('3750', 'Computers and Society', '3', 'Computer Science', 'SPRING'), " +
+                    " ('1030', 'World of Music', '3', 'Music', 'SUMMER') " +
                     " ; ";
                 statement.executeUpdate(sql);
                 
@@ -267,6 +268,7 @@ public class EnrollmentSubSystem {
                     " courseID varchar(10) unique not null, " +
                     " professorID varchar(10) unique not null, " +
                     " term varchar(20), " +
+                    " subject varchar(20), " +
                     " roomID varchar(10) unique not null, " +
                     " foreign key (courseID) references courses(courseID), " +
                     " foreign key (professorID) references professors(professorID), " +
@@ -274,12 +276,12 @@ public class EnrollmentSubSystem {
                     " ); ";
                 statement.executeUpdate(sql);
                 
-                sql = "insert into sections (sectionID, courseID, professorID, term, roomID) " + 
+                sql = "insert into sections (sectionID, courseID, professorID, term, subject, roomID) " + 
                     " values " + 
-                    " ('1', '3560', '1', 'FALL', '2643'), " +
-                    " ('2', '3500', '2', 'FALL', '348'), " +
-                    " ('3', '3750', '3', 'SPRING', '2005'), " +
-                    " ('4', '1030', '4', 'SUMMER', '1029') " +
+                    " ('1', '3560', '1', 'FALL', 'Computer Science', '2643'), " +
+                    " ('2', '3500', '2', 'FALL', 'Philosophy', '348'), " +
+                    " ('3', '3750', '3', 'SPRING', 'Computer Science', '2005'), " +
+                    " ('4', '1030', '4', 'SUMMER', 'Music', '1029') " +
                     " ; ";
                 statement.executeUpdate(sql);
 

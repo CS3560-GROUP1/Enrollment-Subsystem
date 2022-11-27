@@ -45,7 +45,7 @@ public class methods {
         }
     }
 
-    public void search(String term, String courseNum){
+    public void search(String term, String courseNum, String subject){
         //search for class by choosing a subject and inputting a course number
         try {
             Connection con;
@@ -55,14 +55,20 @@ public class methods {
             String[] args = {};
             if(courseNum.isBlank()){
                 //if only term is chosen
-                sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "';";
+                if(subject.equals("Select"))
+                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "';";
+                else
+                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.subject = '"+ subject +"';";
                 ResultSet result = statement.executeQuery(sql);
                 ArrayList<String> sectionIDs = new ArrayList<String>();
                 while(result.next()){
                     System.out.println("sectionID: "+result.getString("sectionID"));
                     sectionIDs.add(result.getString("sectionID"));
                 }
-                sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "';";
+                if(subject.equals("Select"))
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "';";
+                else
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.subject = '"+ subject +"';";
                 result = statement.executeQuery(sql);
                 ArrayList<String> courseIDs = new ArrayList<String>();
                 while(result.next()){
@@ -82,14 +88,20 @@ public class methods {
             }
             else{
                 //if course num is also specified
-                sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                if(subject.equals("Select"))
+                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                else
+                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "' AND sections.subject = '"+ subject +"';";
                 ResultSet result = statement.executeQuery(sql);
                 ArrayList<String> sectionIDs = new ArrayList<String>();
                 while(result.next()){
                     System.out.println("sectionID: "+result.getString("sectionID"));
                     sectionIDs.add(result.getString("sectionID"));
                 }
-                sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                if(subject.equals("Select"))
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                else
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "' AND sections.subject = '"+ subject +"';";
                 result = statement.executeQuery(sql);
                 ArrayList<String> courseIDs = new ArrayList<String>();
                 while(result.next()){
