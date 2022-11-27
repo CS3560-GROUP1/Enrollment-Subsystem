@@ -9,6 +9,10 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -172,6 +176,37 @@ public class HomePanel extends JFrame{
         
     }
 
+    public void populateHomePanel(String studentID){
+        
+        try (Connection con = EnrollmentSubSystem.getSQLConnection() ){
+            
+            System.out.println(studentID);
+            
+            String sql0 = "SELECT * FROM students WHERE studentID=?; ";
+            PreparedStatement pSta = con.prepareStatement(sql0);
+            pSta.setString(1, studentID);
+            ResultSet RS0 = pSta.executeQuery();
+            
+            if(!(RS0.isBeforeFirst())){
+                System.err.println(" Empty Result Set - populate home panel");
+            } else {
+                
+                if(RS0.next()){
+                    String tempFName = RS0.getString("first_Name");
+                    String tempLName = RS0.getString("last_Name");
+                    usernameLabel.setText(tempFName.concat(" " + tempLName));
+                }
+                
+            }
+            
+            
+        } catch (SQLException e) { System.err.println( "Connection Failed (Home Panel Population): " + e.toString() ); }
+        
+         
+        layout.show(facePanel, "home");
+        setVisible(true);
+        
+    }
     
     
 }

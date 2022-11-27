@@ -243,9 +243,13 @@ public class EnrollmentSubSystem {
                 sql = "create table courses ( " +
                     " courseID varchar(10) unique not null primary key, " +
                     " course_Name varchar(30) not null, " +
-                    " units smallint not null " +
+                    " units smallint not null, " +
+                    " term varchar(12) not null" +
                     " );";
                 statement.executeUpdate(sql);
+                
+                //sql = "INSERT INTO courses (courseID, course_Name, units, term)";
+                //statement.executeUpdate(sql);
                 
                 sql = "insert into courses (courseID, course_Name, units) " + 
                     " values " + 

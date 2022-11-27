@@ -77,6 +77,7 @@ public class LoginPanel extends JFrame{
         ActionListener loginListener = evt -> {
             
             switch (evt.getActionCommand()) {
+                
                 case "Sign in" -> {
                     username = usernameJTextField.getText();
                     password = passwordJTextField.getText();
@@ -102,19 +103,20 @@ public class LoginPanel extends JFrame{
                                 
                                 JOptionPane.showMessageDialog(mockLogin, "Cant Find Account", "No Accounts", JOptionPane.INFORMATION_MESSAGE);
                                 
-                            }else{
+                            }else{ // Not Empty
                                 if(RS.next()){
                                     
                                     String passHex = RS.getString("password_Hash");
                                     String saltHex = RS.getString("password_Salt");
+                                    String ID = RS.getString("studentID");
 
                                     byte[] salt = EnrollmentSubSystem.hexStringToBit(saltHex);
                                     String inputPassHex = EnrollmentSubSystem.bitArrayToHex( EnrollmentSubSystem.passwordHash(password, salt) );
 
-                                    if (passHex.equals(inputPassHex)){
+                                    if ( passHex.equals(inputPassHex) ){
                                         //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
                                         con.close();
-                                        new HomePanel().startUp();
+                                        new HomePanel().populateHomePanel(ID);
                                         dispose();
 
                                     } else {
