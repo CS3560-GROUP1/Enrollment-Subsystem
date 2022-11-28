@@ -291,24 +291,26 @@ public class methods {
             //(if it has one). if it doesn't find the prerequisite, there is a conflict
             //(this technically counts all prerequisites as corequisites)
             //matches should = # of prerequisites if all prerequisites are enrolled/in cart
-            // int matches = 0;
-            // if(section.getCourse().getPrerequisites()[0].getCourseID() != 0){
-            //     //for every prerequisite of this section
-            //     for(int i = 0; i < section.getCourse().getPrerequisites().length; i++){
-            //         //check if it matches any class enrolled/in cart
-            //        for(int j = 0; j < allSections.size(); j++){
-            //            if(section.getCourse().getPrerequisites()[i].getCourseID() ==
-            //              allSections.get(j).getCourse().getCourseID()){
-            //                matches++;
-            //            }
-            //         } 
-            //     }
-            //     if(matches < section.getCourse().getPrerequisites().length){
-            //         System.out.println("prerequisite conflict");
-            //         conflictCheck = true;
-            //         return conflictCheck;
-            //     }
-            // }
+            int matches = 0;
+            if(section.getCourse().getPrerequisites()!=null && section.getCourse().getPrerequisites()[0].getCourseID() != 0){
+                //for every prerequisite of this section
+                for(int i = 0; i < section.getCourse().getPrerequisites().length; i++){
+                    //check if it matches any class enrolled/in cart
+                   for(int j = 0; j < allSections.size(); j++){
+                       if(section.getCourse().getPrerequisites()[i].getCourseID() ==
+                         allSections.get(j).getCourse().getCourseID()){
+                           matches++;
+                       }
+                    } 
+                }
+                if(matches < section.getCourse().getPrerequisites().length){
+                    System.out.println("prerequisite conflict");
+                    errorMsg = "prerequisite conflict";
+                    conflictCheck = true;
+                    throw new Exception(errorMsg);
+                    //return conflictCheck;
+                }
+            }
             
         }catch (SQLException ex) {
             System.err.println(ex.toString());
