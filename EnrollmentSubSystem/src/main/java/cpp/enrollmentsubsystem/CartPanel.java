@@ -4,10 +4,16 @@
  */
 package cpp.enrollmentsubsystem;
 
+import static cpp.enrollmentsubsystem.EnrollmentSubSystem.getSQLConnection;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -19,7 +25,7 @@ import javax.swing.SwingUtilities;
 
 public class CartPanel extends JFrame{
     
-    public CartPanel(CourseCart cart){
+    public CartPanel(String studentID){
         final CourseCart viewCart = new CourseCart();
         methods m = new methods();
         setSize(new Dimension(600, 400));
@@ -46,26 +52,65 @@ public class CartPanel extends JFrame{
         JPanel layoutPanel = new JPanel();
         layoutPanel.setBounds(20, 40, 550, 1000);
         layoutPanel.setLayout(null);
-        if(cart == null){
-            //mock data for testing
-            viewCart.setSections(setMockData());
-            Student testStudent = new Student();
-            testStudent.setEmail("asmith@cpp.edu");
-            testStudent.setID(1234);
-            testStudent.setMajor("CS");
-            testStudent.setName("Adam Smith");
-            testStudent.setPassword("pw");
-            viewCart.setStudent(testStudent);
+//        if(cart == null){
+//            //mock data for testing
+//            viewCart.setSections(setMockData());
+//            Student testStudent = new Student();
+//            testStudent.setEmail("asmith@cpp.edu");
+//            testStudent.setID(1234);
+//            testStudent.setMajor("CS");
+//            testStudent.setName("Adam Smith");
+//            testStudent.setPassword("pw");
+//            viewCart.setStudent(testStudent);
+//        }
+//        else{
+//            viewCart.setSections(cart.getSections());
+//            viewCart.setStudent(cart.getStudent());
+//        }
+        ArrayList<String> sectionIDs = new ArrayList<String>();        
+        ArrayList<String> courseIDs = new ArrayList<String>();
+        ArrayList<String> courseNames = new ArrayList<String>();
+        try{
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "";
+            sql = "SELECT student_cart_entries.sectionID FROM student_cart_entries WHERE student_cart_entries.studentID = '" + studentID + "';";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                    System.out.println("sectionID: "+result.getString("sectionID"));
+                    sectionIDs.add(result.getString("sectionID")); 
+            }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
         }
-        else{
-            viewCart.setSections(cart.getSections());
-            viewCart.setStudent(cart.getStudent());
-        }
-        if(viewCart.getSections().length > 0){
+        if(sectionIDs.size() > 0){
             int offset = 80;
-            
+            //get courseIDs and course names
+            for(int i = 0; i < sectionIDs.size(); i++){
+                try{
+                Connection con;
+                con = getSQLConnection();
+                Statement statement = con.createStatement();
+                String sql = "";
+                sql = "SELECT sections.courseID FROM sections WHERE sections.sectionID = '" + sectionIDs.get(i) + "';";
+                ResultSet result = statement.executeQuery(sql);
+                while(result.next()){
+                        System.out.println("courseID: "+result.getString("courseID"));
+                        courseIDs.add(result.getString("courseID")); 
+                }
+                sql = "SELECT courses.course_Name FROM courses WHERE courses.courseID = '" + courseIDs.get(i) + "';";
+                result = statement.executeQuery(sql);
+                while(result.next()){
+                        System.out.println("course Name: "+result.getString("course_Name"));
+                        courseNames.add(result.getString("course_Name")); 
+                }
+                }catch (SQLException ex) {
+                    System.err.println(ex.toString());
+                }
+            }
             //display all classes in cart
-            for(int i = 0; i < viewCart.getSections().length; i++){
+            for(int i = 0; i < sectionIDs.size(); i++){
                 JPanel listItem = new JPanel(null);
                 listItem.setBackground(Color.white);
                 JLabel courseNum = new JLabel(); 
@@ -73,24 +118,23 @@ public class CartPanel extends JFrame{
                 JLabel courseName = new JLabel();
                 courseName.setBounds(50, 20, 200, 20);
                 JLabel sectionNum = new JLabel();
-                sectionNum.setBounds(200, 20, 100, 20);
+                sectionNum.setBounds(300, 20, 100, 20);
                 listItem.setBounds(10, 10+i*offset, 525, 70);
-                courseNum.setText(((Integer)viewCart.getSections()[i].getCourse().getCourseID()).toString());
-                courseName.setText(viewCart.getSections()[i].getCourse().getName());
-                sectionNum.setText("section "+((Integer)viewCart.getSections()[i].getNumber()).toString());
+                courseNum.setText(courseIDs.get(i));
+                courseName.setText(courseNames.get(i));
+                sectionNum.setText("section "+ sectionIDs.get(i));
                 listItem.add(courseNum);                
                 listItem.add(courseName);
                 listItem.add(sectionNum);
                 JButton remove = new JButton("Remove");
-                Section toRemove = viewCart.getSections()[i];
+                String toRemove = sectionIDs.get(i);
                 int position = i + 1;
                 remove.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                        m.removeFromCart(toRemove, cart);
-                        viewCart.setSections(viewRemoveOne(viewCart, position));
+                        m.removeFromCart(toRemove, studentID);
                         //reset this window to display new info
                         String[] args = {};
-                        CartPanel.main(args, viewCart);
+                        CartPanel.main(args, studentID);
                         dispose();
                     }
                 });
@@ -117,16 +161,16 @@ public class CartPanel extends JFrame{
         removeAll.setBounds(200, 300, 100, 30);
         removeAll.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                if(viewCart.courses.length > 0){
-                    for(int i = 0; i < viewCart.courses.length; i++){
-                        Section toRemove = viewCart.getSections()[i];
-                        m.removeFromCart(toRemove, viewCart);
+                if(sectionIDs.size() > 0){
+                    for(int i = 0; i < sectionIDs.size(); i++){
+                        String toRemove = sectionIDs.get(i);
+                        m.removeFromCart(toRemove, studentID);
                     }
                     //remove all sections from cart
-                    viewCart.setSections(new Section[0]);
+                    //viewCart.setSections(new Section[0]);
                     //reset this window to display new info
                     String[] args = {};
-                    CartPanel.main(args, viewCart);
+                    CartPanel.main(args, studentID);
                     dispose();
                 }
                 else{
@@ -162,7 +206,7 @@ public class CartPanel extends JFrame{
                     viewCart.setSections(new Section[0]);
                     //reset this window to display new info
                     String[] args = {};
-                    CartPanel.main(args, viewCart);
+                    CartPanel.main(args, studentID);
                     dispose();
                 }
                 else{
@@ -274,20 +318,9 @@ public class CartPanel extends JFrame{
         return sections;
     }
     
-    public static void main(String[] args, CourseCart cart){
+    public static void main(String[] args, String studentID){
         SwingUtilities.invokeLater( () -> {
-            new CartPanel(cart).setVisible(true);
+            new CartPanel(studentID).setVisible(true);
         });
-    }
-    
-    public Section[] viewRemoveOne(CourseCart removeCart, int position){
-        for(int i = 0; i < removeCart.courses.length - position; i++){
-            removeCart.getSections()[position + i - 1] = removeCart.getSections()[position + i];
-        }
-        Section[] returned = new Section[removeCart.courses.length - 1];
-        for(int i = 0; i < returned.length; i++){
-            returned[i] = removeCart.getSections()[i];
-        }
-        return returned;
     }
 }
