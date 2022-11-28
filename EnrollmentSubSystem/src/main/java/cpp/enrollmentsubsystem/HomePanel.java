@@ -78,12 +78,12 @@ public class HomePanel extends JFrame{
             //LEFT
             JPanel leftTopPanel = new JPanel();
             leftTopPanel.setBounds(0,0,size.width/2, topPanel.getHeight() );
-            leftTopPanel.setBackground(Color.green);
+            leftTopPanel.setBackground(Color.lightGray);
             leftTopPanel.setLayout(new GridBagLayout());
             
             JPanel rightTopPanel = new JPanel();
             rightTopPanel.setBounds(size.width/2, 0, size.width/2, topPanel.getHeight());
-            rightTopPanel.setBackground(Color.CYAN);
+            rightTopPanel.setBackground(Color.gray);
 
             {
             GridBagConstraints c = new GridBagConstraints();
@@ -205,7 +205,7 @@ public class HomePanel extends JFrame{
 
             //Bottom Panel - Set up will be moved to after a user logins to receive from where to pull home screen data.
         bottomPanel = new JPanel(null);
-        bottomPanel.setBackground(Color.blue);
+        bottomPanel.setBackground(Color.darkGray);
         bottomPanel.setBounds(0, topPanel.getHeight(), (size.width), (int)(size.height - topPanel.getHeight() ));     
             
             uSchedulesPanel = new UserSchedulesPanel(size);
