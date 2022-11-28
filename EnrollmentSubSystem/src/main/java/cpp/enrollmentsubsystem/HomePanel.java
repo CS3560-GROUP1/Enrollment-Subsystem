@@ -117,6 +117,10 @@ public class HomePanel extends JFrame{
                     case "Change Term" -> {
                         System.out.println(" Change Term ");
                     }
+                    case "Sign Out" -> {
+                        new LoginPanel().setVisible(true);
+                        dispose();
+                    }
                     default -> {
                         System.out.println(evt.toString());
                     }
@@ -145,9 +149,16 @@ public class HomePanel extends JFrame{
             mi3.addActionListener(menuListner);
             mi3.setActionCommand("Enroll");
             
+            JMenuItem mi4 = new JMenuItem();
+            mi4.setText("Sign Out");
+            mi4.addActionListener(menuListner);
+            mi4.setActionCommand("Sign Out");
+            
             menu.add(mi1);
             menu.add(mi2);
             menu.add(mi3);
+            menu.add(mi4);
+
 
             JButton menuButton = new JButton("Menu");
             ActionListener menuActivator = evt -> {
