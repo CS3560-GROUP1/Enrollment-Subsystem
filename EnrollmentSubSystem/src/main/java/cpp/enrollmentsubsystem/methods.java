@@ -170,7 +170,7 @@ public class methods {
 
     public void addToCart(Section section, String studentID){
         //check if added section will cause any conflicts
-        if (checkConflicts(section, studentID) == false) {
+        if (checkConflicts(section, studentID, "") == false) {
             //if there are no conflicts, add section to cart
         }
         else{
@@ -187,7 +187,7 @@ public class methods {
         System.out.println("add to cart called");
     }
 
-    public boolean checkConflicts(Section section, String studentID){
+    public boolean checkConflicts(Section section, String studentID, String errorMsg){
         //false = no conflict, true = conflict
         boolean conflictCheck = false;
         //convert everything to Section class objects
@@ -244,8 +244,10 @@ public class methods {
                     if(allSections.get(i).getTime().equals(section.getTime()) 
                         && allSections.get(i).getTerm().equals(section.getTerm())){
                         System.out.println("schedule conflict");
+                        errorMsg = "schedule conflict";
                         conflictCheck = true;
-                        return conflictCheck;
+                        throw new Exception(errorMsg);
+                        //return conflictCheck;
                     }
                 }
             }
@@ -260,8 +262,10 @@ public class methods {
                 }
                 if(totalUnits + section.getCourse().getUnits() > maxUnits){
                     System.out.println("max unit conflict");
+                    errorMsg = "max unit conflict";
                     conflictCheck = true;
-                    return conflictCheck;
+                    throw new Exception(errorMsg);
+                    //return conflictCheck;
                 }
             }
             //enroll cap conflict
@@ -277,35 +281,47 @@ public class methods {
             }
             if(numEnrolled + 1 > section.getEnrollCapcity() + section.getWaitCapacity()){
                 System.out.println("enroll cap conflict");
+                errorMsg = "enroll cap conflict";
                 conflictCheck = true;
-                return conflictCheck;
+                throw new Exception(errorMsg);
+                //return conflictCheck;
             }
             //prerequisite conflict
             //checks enrolled and in cart for the prerequisite of the section being checked
             //(if it has one). if it doesn't find the prerequisite, there is a conflict
             //(this technically counts all prerequisites as corequisites)
             //matches should = # of prerequisites if all prerequisites are enrolled/in cart
-            int matches = 0;
-            if(section.getCourse().getPrerequisites()[0].getCourseID() != 0){
-                //for every prerequisite of this section
-                for(int i = 0; i < section.getCourse().getPrerequisites().length; i++){
-                    //check if it matches any class enrolled/in cart
-                   for(int j = 0; j < allSections.size(); j++){
-                       if(section.getCourse().getPrerequisites()[i].getCourseID() ==
-                         allSections.get(j).getCourse().getCourseID()){
-                           matches++;
-                       }
-                    } 
-                }
-                if(matches < section.getCourse().getPrerequisites().length){
-                    System.out.println("prerequisite conflict");
-                    conflictCheck = true;
-                    return conflictCheck;
-                }
-            }
+            // int matches = 0;
+            // if(section.getCourse().getPrerequisites()[0].getCourseID() != 0){
+            //     //for every prerequisite of this section
+            //     for(int i = 0; i < section.getCourse().getPrerequisites().length; i++){
+            //         //check if it matches any class enrolled/in cart
+            //        for(int j = 0; j < allSections.size(); j++){
+            //            if(section.getCourse().getPrerequisites()[i].getCourseID() ==
+            //              allSections.get(j).getCourse().getCourseID()){
+            //                matches++;
+            //            }
+            //         } 
+            //     }
+            //     if(matches < section.getCourse().getPrerequisites().length){
+            //         System.out.println("prerequisite conflict");
+            //         conflictCheck = true;
+            //         return conflictCheck;
+            //     }
+            // }
             
         }catch (SQLException ex) {
             System.err.println(ex.toString());
+            JOptionPane.showMessageDialog( null, 
+                            "Error adding section", 
+                            "Schedule conflict!", 
+                            JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception e) {
+            JOptionPane.showMessageDialog( null, 
+            "Error adding section\n"+e.getMessage(), 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
         }
         //if there are no conflicts, this should return false
         return conflictCheck;

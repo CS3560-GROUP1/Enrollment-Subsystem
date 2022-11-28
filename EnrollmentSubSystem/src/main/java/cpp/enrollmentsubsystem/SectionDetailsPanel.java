@@ -290,9 +290,10 @@ public class SectionDetailsPanel extends JFrame{
         add.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 methods m = new methods();
-                m.addToCart(displaySection, currentStudentID);
+                //m.addToCart(displaySection, currentStudentID);
                 //only add the section if there are no conflicts
-                if(!m.checkConflicts(displaySection, currentStudentID)){
+                String errorMsg = "";
+                if(!m.checkConflicts(displaySection, currentStudentID, errorMsg)){
                     try{
                         Connection con;
                         con = getSQLConnection();
