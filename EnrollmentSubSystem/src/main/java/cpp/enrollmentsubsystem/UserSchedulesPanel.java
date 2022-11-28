@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
 import javax.swing.JPanel;
 
 /**
@@ -77,6 +78,16 @@ public class UserSchedulesPanel extends JPanel {
                         String courseSubject = "";
                         String proffirstName = "";
                         String proflastName = "";
+                        
+                        Time start_time = null;
+                        Time end_time = null;
+                        boolean Monday = false; 
+                        boolean Tuesday = false; 
+                        boolean Wednesday = false; 
+                        boolean Thursday= false;
+                        boolean Friday = false;
+                        boolean Saturday = false; 
+                        boolean Sunday = false;
                         int units = 0;
 
                         
@@ -117,9 +128,28 @@ public class UserSchedulesPanel extends JPanel {
                                     }
                                 }
                                 
-                                UserSchedulesInnerPanel USIP = new UserSchedulesInnerPanel(size, courseName, courseSubject, term, units, proffirstName.concat(" ".concat(proflastName)),sectionIDs[j]);
-                                // usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
-
+                                sql = "SELECT * FROM section_schedules WHERE sectionID=".concat(sectionIDs[j]);
+                                RS = sta.executeQuery(sql);
+                                if(!RS.isBeforeFirst()){
+                                    
+                                }else {
+                                    if(RS.next()){
+                                        
+                                        start_time = RS.getTime("start_time");
+                                        end_time = RS.getTime("end_time");
+                                        Monday = RS.getBoolean("Monday");
+                                        Tuesday = RS.getBoolean("Tuesday");
+                                        Wednesday = RS.getBoolean("Wednesday");
+                                        Thursday = RS.getBoolean("Thursday");
+                                        Friday = RS.getBoolean("Friday");
+                                        Saturday = RS.getBoolean("Saturday");
+                                        Sunday = RS.getBoolean("Sunday");
+                                        
+                                    }
+                                }
+                                
+                                UserSchedulesInnerPanel USIP = new UserSchedulesInnerPanel(size, courseName, courseSubject, term, units, proffirstName.concat(" ".concat(proflastName)),sectionIDs[j],start_time,end_time,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday);
+                                
                                 USIP.setBounds(0, (int)(j * size.getHeight() * 0.25), this.getSize().width, (int)(size.getHeight() * 0.25) );
                                 add(USIP);
                                 
@@ -142,21 +172,3 @@ public class UserSchedulesPanel extends JPanel {
 
     
 }
-
-/**
- * 
-    int entries = 20;
-    JPanel innerBottomPanel = new JPanel(null); // TO BE Moved to method with sql query to reach for information
-    innerBottomPanel.setSize( (int)(size.getWidth() * 0.8), (entries * ((int)(size.getHeight() * 0.25)) ) ); // inner panell size set
-    innerBottomPanel.setPreferredSize(innerBottomPanel.getSize()); // scroll requires a preferred size
-
-    JPanel usePanel; // Will be moved to its own panel class
-    for(int i=0; i< entries; i++){
-        usePanel = new JPanel();
-        usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
-        usePanel.setBackground(new Color(i*5, i*10, i*12));
-
-        innerBottomPanel.add(usePanel);
-    }
- * 
- */

@@ -40,6 +40,8 @@ public class HomePanel extends JFrame{
     private UserSchedulesPanel uSchedulesPanel;
     private JScrollPane bottomScrollPane;
     
+    int bottomScrollPaneOffset;
+    
     public HomePanel(){
         super();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -52,6 +54,7 @@ public class HomePanel extends JFrame{
         );
         setSize(size);
        
+        bottomScrollPaneOffset = (int) (size.getWidth() / 50);
         
         facePanel = new JPanel();
         layout = new CardLayout(0, 0);
@@ -166,7 +169,7 @@ public class HomePanel extends JFrame{
             
             uSchedulesPanel = new UserSchedulesPanel(size);
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
-            bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
+            bottomScrollPane.setBounds(bottomScrollPaneOffset, bottomScrollPaneOffset, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             
         bottomPanel.add(bottomScrollPane);
         
@@ -216,7 +219,7 @@ public class HomePanel extends JFrame{
             bottomPanel.remove(bottomScrollPane);
             uSchedulesPanel = new UserSchedulesPanel(this.getSize(), con, studentID);
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
-            bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
+            bottomScrollPane.setBounds(bottomScrollPaneOffset, bottomScrollPaneOffset, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             bottomPanel.add(bottomScrollPane);
             
             
