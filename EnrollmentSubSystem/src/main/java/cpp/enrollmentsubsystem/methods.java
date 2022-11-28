@@ -309,11 +309,21 @@ public class methods {
         System.out.println("enroll "+ student.getName()+" in "+section.getCourse().getName());
     }
 
-    public void dropSection(Student student, Section section){
+    public void dropSection(String studentID, String sectionID){
         //drop enrolled section
         //DELETE FROM enrolled_classes WHERE enrolled_classes.student_ID = '"+student.getID()+"'
         //AND enrolled_classes.course_ID = '"+section.getCourse().getCourseID()+"'
         //AND enrolled_classes.section_ID = '"+section.getNumber()+"';
+        try{
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "DELETE FROM enrolled_classes WHERE enrolled_classes.studentID = '" + studentID + "'" + " AND enrolled_classes.sectionID = '" + sectionID + "';";
+            System.out.println(sql);
+            statement.executeUpdate(sql);
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
     }
 
     public void viewSchedule(Student student){

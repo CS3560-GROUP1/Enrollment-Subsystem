@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
+
 import javax.swing.JPanel;
 
 /**
@@ -22,7 +24,7 @@ public class UserSchedulesPanel extends JPanel {
      * @param con
      * @param studentID 
      */
-    public UserSchedulesPanel(Dimension size, Connection con, String studentID){
+    public UserSchedulesPanel(Dimension size, Connection con, String studentID, Vector<String> dropList){
         super();
         this.setBackground(Color.lightGray);
         setLayout(null);
@@ -117,7 +119,7 @@ public class UserSchedulesPanel extends JPanel {
                                     }
                                 }
                                 
-                                UserSchedulesInnerPanel USIP = new UserSchedulesInnerPanel(size, courseName, courseSubject, term, units, proffirstName.concat(" ".concat(proflastName)),sectionIDs[j]);
+                                UserSchedulesInnerPanel USIP = new UserSchedulesInnerPanel(size, courseName, courseSubject, term, units, proffirstName.concat(" ".concat(proflastName)),sectionIDs[j], dropList);
                                 // usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
 
                                 USIP.setBounds(0, (int)(j * size.getHeight() * 0.25), this.getSize().width, (int)(size.getHeight() * 0.25) );
@@ -137,7 +139,7 @@ public class UserSchedulesPanel extends JPanel {
     }
     
     public UserSchedulesPanel(Dimension size){
-        this(size,null,"");
+        this(size,null,"",null);
     }
 
     

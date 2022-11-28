@@ -8,9 +8,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
+import javax.swing.*;  
+import java.awt.event.*;   
 /**
  *
  * @author LeothEcRz
@@ -18,7 +23,7 @@ import javax.swing.JPanel;
 public class UserSchedulesInnerPanel extends JPanel {
     
     
-    public UserSchedulesInnerPanel(Dimension size, String course_Name, String subject, String term, int units, String professor, String ID){
+    public UserSchedulesInnerPanel(Dimension size, String course_Name, String subject, String term, int units, String professor, String ID, Vector<String> dropList){
         super();
         setBackground(new Color(Integer.parseInt(ID) * 10, Integer.parseInt(ID) * 20, Integer.parseInt(ID) * 15));
         
@@ -57,6 +62,21 @@ public class UserSchedulesInnerPanel extends JPanel {
         
         add(profJLabel, c);
         
+        JCheckBox checkbox = new JCheckBox();
+        c.gridx = 7;
+        c.gridy = 1;
+        checkbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                JCheckBox cb = (JCheckBox) event.getSource();
+                if (cb.isSelected()) {
+                    dropList.add(ID);
+                } else {
+                    dropList.removeElementAt(dropList.indexOf(ID));
+                }
+            }
+        });
+        add(checkbox, c);
         
         
     }

@@ -24,6 +24,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+
+import java.util.Vector;
 /**
  *
  * @author LeothEcRz
@@ -39,9 +41,13 @@ public class HomePanel extends JFrame{
     
     private UserSchedulesPanel uSchedulesPanel;
     private JScrollPane bottomScrollPane;
+
+    public Vector<String> dropList;
+    public String studentID;
     
-    public HomePanel(){
+    public HomePanel(String stuID){
         super();
+        this.studentID = stuID;
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Home");
         
@@ -111,8 +117,10 @@ public class HomePanel extends JFrame{
                         System.out.println(" Enroll ");
 
                     }
-                    case "Change Term" -> {
-                        System.out.println(" Change Term ");
+                    case "Drop selected" -> {
+                        methods m = new methods();
+                        dropList.forEach((n) -> m.dropSection(studentID, n));
+                        populateHomePanel();
                     }
                     default -> {
                         System.out.println(evt.toString());
@@ -122,8 +130,8 @@ public class HomePanel extends JFrame{
 
             JPopupMenu menu = new JPopupMenu();
 
-            JButton changeTermButton = new JButton("Change Term");
-            changeTermButton.setActionCommand("Change Term");
+            JButton changeTermButton = new JButton("Drop selected");
+            changeTermButton.setActionCommand("Drop selected");
             changeTermButton.addActionListener(menuListner);
             rightTopPanel.add(changeTermButton);
 
@@ -189,7 +197,7 @@ public class HomePanel extends JFrame{
         
     }
 
-    public void populateHomePanel(String studentID){
+    public void populateHomePanel(){
         
         try (Connection con = EnrollmentSubSystem.getSQLConnection() ){
             
@@ -214,7 +222,8 @@ public class HomePanel extends JFrame{
             
             bottomScrollPane.remove(uSchedulesPanel);
             bottomPanel.remove(bottomScrollPane);
-            uSchedulesPanel = new UserSchedulesPanel(this.getSize(), con, studentID);
+            dropList = new Vector<String>();
+            uSchedulesPanel = new UserSchedulesPanel(this.getSize(), con, studentID, dropList);
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
             bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             bottomPanel.add(bottomScrollPane);

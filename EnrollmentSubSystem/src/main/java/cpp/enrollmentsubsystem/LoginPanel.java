@@ -118,7 +118,7 @@ public class LoginPanel extends JFrame{
                                         //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
                                         con.close();
                                         currentStudentID = ID;
-                                        new HomePanel().populateHomePanel(ID);
+                                        new HomePanel(ID).populateHomePanel();
                                         dispose();
 
                                     } else {
