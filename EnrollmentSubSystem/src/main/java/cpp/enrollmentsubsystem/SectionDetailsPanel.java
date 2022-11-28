@@ -191,9 +191,9 @@ public class SectionDetailsPanel extends JFrame{
                     System.out.println("num enrolled: "+result.getString("num_enrolled"));
                     numEnrolled = Integer.parseInt(result.getString("num_enrolled"));
                 }
-            }catch (SQLException ex) {
-                System.err.println(ex.toString());
-            }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
         if(numEnrolled > 0){
             //assuming numEnrolled includes total of both enrolled and waitlisted
             if(numEnrolled > displaySection.getEnrollCapcity()){
@@ -290,32 +290,35 @@ public class SectionDetailsPanel extends JFrame{
         add.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 methods m = new methods();
-                m.addToCart(displaySection, cart);
-                try{
-                    Connection con;
-                    con = getSQLConnection();
-                    Statement statement = con.createStatement();
-                    String sql = "";
-                    sql = "INSERT INTO student_cart_entries (studentID, sectionID)" + 
-                    " values " + 
-                    " ("+ currentStudentID +", "+ displaySection.getNumber() +");";
-                    statement.executeUpdate(sql);
-                    JOptionPane.showMessageDialog( getParent(), 
-                    "Section added to cart!\n"
-                    + "Returning to search results", 
-                    "Add section success", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                    //close this window and reload search window
-                    String[] args = {};
-                    SearchResultPanel.main(args, sectionIDs, courseIDs, 
-                            courseNames, searchTerm, searchCourseNum);
-                    dispose();
-                }catch (SQLException ex) {
-                    System.err.println(ex.toString());
-                    JOptionPane.showMessageDialog( getParent(), 
-                    "Error adding section", 
-                    "Add section error", 
-                    JOptionPane.ERROR_MESSAGE);
+                m.addToCart(displaySection, currentStudentID);
+                //only add the section if there are no conflicts
+                if(!m.checkConflicts(displaySection, currentStudentID)){
+                    try{
+                        Connection con;
+                        con = getSQLConnection();
+                        Statement statement = con.createStatement();
+                        String sql = "";
+                        sql = "INSERT INTO student_cart_entries (studentID, sectionID)" + 
+                        " values " + 
+                        " ("+ currentStudentID +", "+ displaySection.getNumber() +");";
+                        statement.executeUpdate(sql);
+                        JOptionPane.showMessageDialog( getParent(), 
+                        "Section added to cart!\n"
+                        + "Returning to search results", 
+                        "Add section success", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                        //close this window and reload search window
+                        String[] args = {};
+                        SearchResultPanel.main(args, sectionIDs, courseIDs, 
+                                courseNames, searchTerm, searchCourseNum);
+                        dispose();
+                    }catch (SQLException ex) {
+                        System.err.println(ex.toString());
+                        JOptionPane.showMessageDialog( getParent(), 
+                        "Error adding section", 
+                        "Add section error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });

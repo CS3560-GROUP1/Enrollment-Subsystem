@@ -151,9 +151,9 @@ public class methods {
         }
     }
 
-    public void addToCart(Section section, CourseCart cart){
+    public void addToCart(Section section, String studentID){
         //check if added section will cause any conflicts
-        if (checkConflicts(section, cart) == false) {
+        if (checkConflicts(section, studentID) == false) {
             //if there are no conflicts, add section to cart
         }
         else{
@@ -170,9 +170,102 @@ public class methods {
         System.out.println("add to cart called");
     }
 
-    public boolean checkConflicts(Section section, CourseCart cart){
+    public boolean checkConflicts(Section section, String studentID){
         //false = no conflict, true = conflict
         boolean conflictCheck = false;
+        //convert everything to Section class objects
+        ArrayList<String> sections = new ArrayList<String>();             
+        ArrayList<String> courses = new ArrayList<String>();    
+        ArrayList<String> courseNames = new ArrayList<String>(); 
+        ArrayList<Section> allSections = new ArrayList<Section>();
+        try{
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "";
+            //enrolled and in cart section IDs
+            sql = "SELECT student_cart_entries.sectionID FROM student_cart_entries WHERE student_cart_entries.studentID = '"+studentID+"'";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                    sections.add(result.getString("sectionID"));
+                }
+            sql = "SELECT enrolled_classes.sectionID FROM enrolled_classes WHERE enrolled_classes.studentID = '"+studentID+"'";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                    sections.add(result.getString("sectionID"));
+                }
+            //course IDs
+            if(sections.size() > 0){
+                for(int i = 0; i < sections.size(); i++){
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.sectionID = '"+sections.get(i)+"'";
+                    result = statement.executeQuery(sql);
+                    while(result.next()){
+                        courses.add(result.getString("courseID"));
+                    }
+                }
+            }
+            //course names
+            if(courses.size() > 0){
+                for(int i = 0; i < courses.size(); i++){
+                    sql = "SELECT courses.course_Name FROM courses WHERE courses.courseID = '"+courses.get(i)+"'";
+                    result = statement.executeQuery(sql);
+                    while(result.next()){
+                        courseNames.add(result.getString("course_Name"));
+                    }
+                }
+            }
+            if(sections.size() > 0){
+                for(int i = 0; i < sections.size(); i++){
+                    allSections.add(setSection(sections.get(i), courses.get(i), courseNames.get(i)));
+                }
+            }
+            //schedule conflict
+            //compare time and term of all sections enrolled and in cart to section being checked
+            //if any are exactly the same, there is a conflict
+            if(allSections.size() > 0){
+                for(int i = 0; i < allSections.size(); i++){
+                    if(allSections.get(i).getTime().equals(section.getTime()) 
+                        && allSections.get(i).getTerm().equals(section.getTerm())){
+                        System.out.println("schedule conflict");
+                        conflictCheck = true;
+                        return conflictCheck;
+                    }
+                }
+            }
+            //max units conflict
+            //add up units of all courses enrolled and in cart and add units of section being checked
+            //if this is greater than the max num of units, there is a conflict
+            int totalUnits = 0;
+            int maxUnits = 16; //hard-coded max unit value
+            if(allSections.size() > 0){
+                for(int i = 0; i < allSections.size(); i++){
+                    totalUnits += allSections.get(i).getCourse().getUnits();
+                }
+                if(totalUnits + section.getCourse().getUnits() > maxUnits){
+                    System.out.println("max unit conflict");
+                    conflictCheck = true;
+                    return conflictCheck;
+                }
+            }
+            //enroll cap conflict
+            //combines enrollment and waitlist capacities of section being checked into 1 max value
+            //if adding this student would increase enrollment above that value,
+            //there is a conflict
+            int numEnrolled = 0;
+            sql = "SELECT COUNT(studentID) as num_enrolled FROM enrolled_classes WHERE enrolled_classes.sectionID = '"+section.getNumber()+"'";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                System.out.println("num enrolled: "+result.getString("num_enrolled"));
+                numEnrolled = Integer.parseInt(result.getString("num_enrolled"));
+            }
+            if(numEnrolled + 1 > section.getEnrollCapcity() + section.getWaitCapacity()){
+                System.out.println("enroll cap conflict");
+                conflictCheck = true;
+                return conflictCheck;
+            }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
         //all this student's currently and previously enrolled courses
         //("currently" or "previously" enrolled is denoted by the "term" attribute):
         //SELECT course_ID FROM enrolled_classes WHERE enrolled_classes.student_ID = '"+cart.getStudent()+"';
@@ -204,57 +297,6 @@ public class methods {
                         conflictCheck = true;
                         return conflictCheck;
                     }
-                }
-            }
-        //schedule conflict
-            //get the time for each section student is enrolled in this term 
-            //("sections" is the database table, "section" is the section being checked):
-            //SELECT time FROM sections INNER JOIN enrolled_classes ON sections.course_ID = enrolled_classes.course_ID 
-            //AND sections.section_ID = enrolled_classes.section_ID AND enrolled_classes.student_ID = '"+cart.getStudent()+"' 
-            //AND sections.term = '"+section.getTerm()+"';
-            ArrayList<String> enrolledTimes = new ArrayList<String>();
-            //compare each enrolled time this term to that of the section being checked; if any match, there is a conflict
-            if(enrolledTimes.size() > 0){
-                for(int i = 0; i < enrolledTimes.size(); i++){
-                    if(enrolledTimes.get(i) == section.getTime()){
-                        conflictCheck = true;
-                        return conflictCheck;
-                    }
-                }
-            }
-        //max units conflict
-            //get the units for each section student is enrolled in this term:
-            //SELECT units FROM courses INNER JOIN enrolled_classes ON courses.course_ID = enrolled_classes.course_ID 
-            //INNER JOIN course_section ON enrolled_classes.section_ID = course_section.section_ID 
-            //AND enrolled_classes.course_ID = course_section.course_ID 
-            //AND enrolled_classes.student_ID = '"+cart.getStudent()+"' AND course_section.term = '"+section.getTerm()+"';
-            ArrayList<Integer> enrolledUnits = new ArrayList<Integer>();
-            //add all units student is enrolled in this term to the units of the seciton being checked
-            //if this total > max allowed units, there is a unit conflict
-             if(enrolledUnits.size() > 0){
-                int totalUnits = 0;
-                final int MAX_UNITS = 16;
-                for(int i = 0; i < enrolledUnits.size(); i++){
-                    totalUnits += enrolledUnits.get(i);
-                }
-                totalUnits += section.getCourse().getUnits();
-                if(totalUnits > MAX_UNITS){
-                    conflictCheck = true;
-                    return conflictCheck;
-                }
-            }
-        //enrollment is full
-        //(this checks if both enrollment and waitlist capacities are full, not each separately)
-            //count number of students enrolled in this section
-            //SELECT COUNT(student_ID) FROM enrolled_classes WHERE course_ID = '"+section.getCourse().getCourseID()+"' 
-            //AND section_ID = '"+section.getNumber()+"';
-            //this should return an ArrayList with only 1 value
-            ArrayList<Integer> numEnrolled = new ArrayList<Integer>();
-            //if this value + this student is > enrollmentCap + waitlistCap, there is a capacity conflict
-            if(numEnrolled.size() > 0){
-                if(numEnrolled.get(0) + 1 > section.getEnrollCapcity() + section.getWaitCapacity()){
-                    conflictCheck = true;
-                    return conflictCheck;
                 }
             }
         //if there are no conflicts, this should return false
@@ -340,7 +382,7 @@ public class methods {
             sql = "SELECT sections.term FROM sections WHERE sections.sectionID = '" + sectionID + "' AND sections.courseID = '"+ courseID +"';";
             ResultSet result = statement.executeQuery(sql);
             while(result.next()){
-                    System.out.println("term: "+result.getString("term"));
+                    //System.out.println("term: "+result.getString("term"));
                     //these queries should only return 1 value so no need for arraylists
                     section.setTerm(result.getString("term")); 
             }
@@ -348,7 +390,7 @@ public class methods {
             sql = "SELECT courses.units FROM courses WHERE courses.courseID = '"+ courseID +"';";
             result = statement.executeQuery(sql);
             while(result.next()){
-                    System.out.println("units: "+result.getString("units"));
+                    //System.out.println("units: "+result.getString("units"));
                     course.setUnits(Integer.parseInt(result.getString("units"))); 
             }
             section.setCourse(course);
@@ -356,7 +398,7 @@ public class methods {
             sql = "SELECT sections.professorID FROM sections WHERE sections.sectionID = '" + sectionID + "' AND sections.courseID = '"+ courseID +"';";
             result = statement.executeQuery(sql);
             while(result.next()){
-                    System.out.println("profID: "+result.getString("professorID"));
+                    //System.out.println("profID: "+result.getString("professorID"));
                     prof.setID(Integer.parseInt(result.getString("professorID"))); 
             }
             //professor name
@@ -376,26 +418,25 @@ public class methods {
             //set professor name
             prof.setName(prof_name);
             section.setProfessor(prof);
-            //----------------above working below not working-----------------------
             //roomID
             sql = "SELECT sections.roomID FROM sections WHERE sections.sectionID = '" + sectionID + "' AND sections.courseID = '"+ courseID +"';";
             result = statement.executeQuery(sql);
             while(result.next()){
-                    System.out.println("room: "+result.getString("roomID"));
+                    //System.out.println("room: "+result.getString("roomID"));
                     section.setLocation(result.getString("roomID")); 
             }
             //enrollment capacity
             sql = "SELECT rooms.enrollment_Capacity FROM rooms WHERE rooms.roomID = '" + section.getLocation() + "';";
             result = statement.executeQuery(sql);
             while(result.next()){
-                    System.out.println("enrollCap: "+result.getString("enrollment_Capacity"));
+                    //System.out.println("enrollCap: "+result.getString("enrollment_Capacity"));
                     section.setEnrollCapacity(Integer.parseInt(result.getString("enrollment_Capacity"))); 
             }
             //waitlist capacity
             sql = "SELECT rooms.wait_List_Capacity FROM rooms WHERE rooms.roomID = '" + section.getLocation() + "';";
             result = statement.executeQuery(sql);
             while(result.next()){
-                    System.out.println("WLCap: "+result.getString("wait_List_Capacity"));
+                    //System.out.println("WLCap: "+result.getString("wait_List_Capacity"));
                     section.setWaitCapcity(Integer.parseInt(result.getString("wait_List_Capacity"))); 
             }
             //time
@@ -404,7 +445,7 @@ public class methods {
                 sql = "SELECT section_schedules.Monday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onMonday: "+result.getBoolean("Monday"));
+                        //System.out.println("onMonday: "+result.getBoolean("Monday"));
                         if(result.getBoolean("Monday")){
                             time += "M";
                         }
@@ -412,7 +453,7 @@ public class methods {
                 sql = "SELECT section_schedules.Tuesday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onTuesday: "+result.getBoolean("Tuesday"));
+                        //System.out.println("onTuesday: "+result.getBoolean("Tuesday"));
                         if(result.getBoolean("Tuesday")){
                             time += "Tu";
                         }
@@ -420,7 +461,7 @@ public class methods {
                 sql = "SELECT section_schedules.Wednesday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onWednesday: "+result.getBoolean("Wednesday"));
+                        //System.out.println("onWednesday: "+result.getBoolean("Wednesday"));
                         if(result.getBoolean("Wednesday")){
                             time += "W";
                         }
@@ -428,7 +469,7 @@ public class methods {
                 sql = "SELECT section_schedules.Thursday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onThursday: "+result.getBoolean("Thursday"));
+                        //System.out.println("onThursday: "+result.getBoolean("Thursday"));
                         if(result.getBoolean("Thursday")){
                             time += "Th";
                         }
@@ -436,7 +477,7 @@ public class methods {
                 sql = "SELECT section_schedules.Friday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onFriday: "+result.getBoolean("Friday"));
+                        //System.out.println("onFriday: "+result.getBoolean("Friday"));
                         if(result.getBoolean("Friday")){
                             time += "F";
                         }
@@ -444,7 +485,7 @@ public class methods {
                 sql = "SELECT section_schedules.Saturday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onSaturday: "+result.getBoolean("Saturday"));
+                       // System.out.println("onSaturday: "+result.getBoolean("Saturday"));
                         if(result.getBoolean("Saturday")){
                             time += "Sa";
                         }
@@ -452,7 +493,7 @@ public class methods {
                 sql = "SELECT section_schedules.Sunday FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("onSunday: "+result.getBoolean("Sunday"));
+                        //System.out.println("onSunday: "+result.getBoolean("Sunday"));
                         if(result.getBoolean("Sunday")){
                             time += "Su";
                         }
@@ -460,16 +501,17 @@ public class methods {
                 sql = "SELECT section_schedules.start_time FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("start time: "+result.getString("start_time"));
+                        //System.out.println("start time: "+result.getString("start_time"));
                         time += " " + result.getString("start_time") + "-"; 
                 }
                 sql = "SELECT section_schedules.end_time FROM section_schedules WHERE section_schedules.sectionID = '" + sectionID + "';";
                 result = statement.executeQuery(sql);
                 while(result.next()){
-                        System.out.println("end time: "+result.getString("end_time"));
+                        //System.out.println("end time: "+result.getString("end_time"));
                         time += result.getString("end_time");
                 }
                 section.setTime(time);
+                //System.out.println("time: "+time);
         }catch (SQLException ex) {
             System.err.println(ex.toString());
         }
