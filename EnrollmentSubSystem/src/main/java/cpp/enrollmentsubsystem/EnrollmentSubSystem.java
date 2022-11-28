@@ -126,7 +126,7 @@ public class EnrollmentSubSystem {
                     String[] args = {};
                     //change "currentStudentID" to "[your id in the mock data]" to test adding to cart and cart view in debug mode
                     //add to cart through search in normal mode, then relaunch in debug and view cart/enroll
-                    CartPanel.main(args, currentStudentID);
+                    CartPanel.main(args, currentStudentID,null);
                     frame.dispose();
                 }
             });

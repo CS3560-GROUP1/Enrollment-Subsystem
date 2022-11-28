@@ -120,8 +120,20 @@ public class HomePanel extends JFrame{
                     }
                     case "Cart" -> {
                         
+                        ActionListener innerAL = ev -> {
+                            dispose();
+                            String id = ev.getActionCommand();
+                            
+                            System.out.println(id);
+                                    
+                            HomePanel hPanel = new HomePanel(id);
+                            hPanel.populateHomePanel();
+                            hPanel.setVisible(true);
+                        };
+                        
+                        
                         CartPanel cartPanel =
-                        new CartPanel(studentID);
+                        new CartPanel(studentID, innerAL);
                         cartPanel.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
                         cartPanel.setVisible(true);
 

@@ -25,7 +25,7 @@ import javax.swing.SwingUtilities;
 
 public class CartPanel extends JFrame{
     
-    public CartPanel(String studentID){
+    public CartPanel(String studentID, ActionListener AL){
         final CourseCart viewCart = new CourseCart();
         methods m = new methods();
         setSize(new Dimension(600, 400));
@@ -134,7 +134,7 @@ public class CartPanel extends JFrame{
                         m.removeFromCart(toRemove, studentID);
                         //reset this window to display new info
                         String[] args = {};
-                        CartPanel.main(args, studentID);
+                        CartPanel.main(args, studentID, AL);
                         dispose();
                     }
                 });
@@ -170,7 +170,7 @@ public class CartPanel extends JFrame{
                     //viewCart.setSections(new Section[0]);
                     //reset this window to display new info
                     String[] args = {};
-                    CartPanel.main(args, studentID);
+                    CartPanel.main(args, studentID, AL);
                     dispose();
                 }
                 else{
@@ -206,8 +206,13 @@ public class CartPanel extends JFrame{
                     //viewCart.setSections(new Section[0]);
                     //reset this window to display new info
                     String[] args = {};
-                    CartPanel.main(args, studentID);
+                    //CartPanel.main(args, studentID, AL);
                     dispose();
+                    
+                    ActionEvent evt = new ActionEvent(this, ActionEvent.ACTION_PERFORMED, studentID);
+                    
+                    AL.actionPerformed(evt);
+                    
                 }
                 else{
                     JFrame alertFrame = new JFrame();
@@ -318,9 +323,9 @@ public class CartPanel extends JFrame{
         return sections;
     }
     
-    public static void main(String[] args, String studentID){
+    public static void main(String[] args, String studentID, ActionListener AL){
         SwingUtilities.invokeLater( () -> {
-            new CartPanel(studentID).setVisible(true);
+            new CartPanel(studentID, AL).setVisible(true);
         });
     }
 }

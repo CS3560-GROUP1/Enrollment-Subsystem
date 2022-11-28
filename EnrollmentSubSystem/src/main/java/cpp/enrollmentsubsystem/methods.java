@@ -286,7 +286,7 @@ public class methods {
             //(this technically counts all prerequisites as corequisites)
             //matches should = # of prerequisites if all prerequisites are enrolled/in cart
             int matches = 0;
-            if(section.getCourse().getPrerequisites()[0].getCourseID() != 0){
+            if(section.getCourse().getPrerequisites()!=null && section.getCourse().getPrerequisites()[0].getCourseID() != 0){
                 //for every prerequisite of this section
                 for(int i = 0; i < section.getCourse().getPrerequisites().length; i++){
                     //check if it matches any class enrolled/in cart
