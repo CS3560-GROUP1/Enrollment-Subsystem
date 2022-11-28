@@ -30,7 +30,7 @@ public class SectionDetailsPanel extends JFrame{
         
     public SectionDetailsPanel(Section section, CourseCart cart,
             ArrayList<String> sectionIDs, ArrayList<String> courseIDs, 
-            ArrayList<String> courseNames, String searchTerm, String searchCourseNum){
+            ArrayList<String> courseNames, String searchTerm, String searchCourseNum, boolean debug){
         //have to use final variables to avoid errors when passing to add function
         final Section displaySection = new Section();
         final CourseCart displayCart = new CourseCart();
@@ -88,7 +88,12 @@ public class SectionDetailsPanel extends JFrame{
         setSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         setTitle("Section Details");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        if(debug){
+            setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        } else {
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }
                 
         JPanel container = new JPanel(null);
         //back button
@@ -99,7 +104,7 @@ public class SectionDetailsPanel extends JFrame{
                 //close this window and reload search window
                 String[] args = {};
                 SearchResultPanel.main(args, sectionIDs, courseIDs, 
-                        courseNames, searchTerm, searchCourseNum);
+                        courseNames, searchTerm, searchCourseNum, debug);
                 dispose();
             }
         });
@@ -311,7 +316,7 @@ public class SectionDetailsPanel extends JFrame{
                         //close this window and reload search window
                         String[] args = {};
                         SearchResultPanel.main(args, sectionIDs, courseIDs, 
-                                courseNames, searchTerm, searchCourseNum);
+                                courseNames, searchTerm, searchCourseNum, debug);
                         dispose();
                     }catch (SQLException ex) {
                         System.err.println(ex.toString());
@@ -329,10 +334,10 @@ public class SectionDetailsPanel extends JFrame{
     
      public static void main(String[] args, Section section, CourseCart cart,
             ArrayList<String> sectionIDs, ArrayList<String> courseIDs, 
-            ArrayList<String> courseNames, String searchTerm, String searchCourseNum){
+            ArrayList<String> courseNames, String searchTerm, String searchCourseNum, boolean debug){
         SwingUtilities.invokeLater( () -> {
             new SectionDetailsPanel(section, cart, sectionIDs, courseIDs, 
-            courseNames, searchTerm, searchCourseNum).setVisible(true);
+            courseNames, searchTerm, searchCourseNum, debug).setVisible(true);
         });
     }
 }
