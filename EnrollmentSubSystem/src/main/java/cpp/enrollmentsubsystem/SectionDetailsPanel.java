@@ -4,13 +4,19 @@
  */
 package cpp.enrollmentsubsystem;
 
+import static cpp.enrollmentsubsystem.EnrollmentSubSystem.getSQLConnection;
+import static cpp.enrollmentsubsystem.LoginPanel.currentStudentID;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -277,6 +283,32 @@ public class SectionDetailsPanel extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 methods m = new methods();
                 m.addToCart(displaySection, cart);
+                try{
+                    Connection con;
+                    con = getSQLConnection();
+                    Statement statement = con.createStatement();
+                    String sql = "";
+                    sql = "INSERT INTO student_cart_entries (studentID, sectionID)" + 
+                    " values " + 
+                    " ("+ currentStudentID +", "+ displaySection.getNumber() +");";
+                    statement.executeUpdate(sql);
+                    JOptionPane.showMessageDialog( getParent(), 
+                    "Section added to cart!\n"
+                    + "Returning to search results", 
+                    "Add section success", 
+                    JOptionPane.INFORMATION_MESSAGE);
+                    //close this window and reload search window
+                    String[] args = {};
+                    SearchResultPanel.main(args, sectionIDs, courseIDs, 
+                            courseNames, searchTerm, searchCourseNum);
+                    dispose();
+                }catch (SQLException ex) {
+                    System.err.println(ex.toString());
+                    JOptionPane.showMessageDialog( getParent(), 
+                    "Error adding section", 
+                    "Add section error", 
+                    JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         container.add(add);

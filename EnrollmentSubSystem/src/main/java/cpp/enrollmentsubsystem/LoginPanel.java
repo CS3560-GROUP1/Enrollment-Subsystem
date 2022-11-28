@@ -32,6 +32,7 @@ public class LoginPanel extends JFrame{
     
     private String username;
     private String password;
+    public static String currentStudentID;
     
     private SignUpPanel signUpPanel;
     
@@ -116,6 +117,7 @@ public class LoginPanel extends JFrame{
                                     if ( passHex.equals(inputPassHex) ){
                                         //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
                                         con.close();
+                                        currentStudentID = ID;
                                         new HomePanel().populateHomePanel(ID);
                                         dispose();
 
