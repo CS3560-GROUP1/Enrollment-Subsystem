@@ -173,12 +173,7 @@ public class HomePanel extends JFrame{
             mi2.setText("Cart");
             mi2.addActionListener(menuListner);
             mi2.setActionCommand("Cart");
-            
-            JMenuItem mi3 = new JMenuItem();
-            mi3.setText("Enroll");
-            mi3.addActionListener(menuListner);
-            mi3.setActionCommand("Enroll");
-            
+
             JMenuItem mi4 = new JMenuItem();
             mi4.setText("Sign Out");
             mi4.addActionListener(menuListner);
@@ -186,7 +181,6 @@ public class HomePanel extends JFrame{
             
             menu.add(mi1);
             menu.add(mi2);
-            menu.add(mi3);
             menu.add(mi4);
 
 
