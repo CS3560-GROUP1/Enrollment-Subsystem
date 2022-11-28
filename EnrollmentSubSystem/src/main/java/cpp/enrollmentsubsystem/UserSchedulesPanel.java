@@ -7,7 +7,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
@@ -55,38 +54,78 @@ public class UserSchedulesPanel extends JPanel {
                     
                     sql = "SELECT sectionID FROM enrolled_classes WHERE studentID=".concat(studentID);
                     RS = sta.executeQuery(sql);
-                    
                     String[] sectionIDs = new String[classCount];
-                    
-                    for(int i=1; i<=classCount; i++){
-                        sectionIDs[i-1] = RS.getString(i);
+                    if(!(RS.isBeforeFirst())){
+                        
+                    }else {
+                        if(RS.next()){
+                            for(int i=1; i<=classCount; i++){
+                                sectionIDs[i-1] = RS.getString(1);
+                                RS.next();
+                            }
+                        }
                     }
                     
-                    for(String s : sectionIDs){
-                        sql = "SELECT sectionID FROMenrolled_classes WHERE studentID=".concat(studentID);
+                    for(int j=0; j<sectionIDs.length; j++){
+                        
+                        String courseID = "";
+                        String professorID = "";
+                        String term = "";
+                        String sectionSubject = "";
+                        String roomID = "";
+                        String courseName = "";
+                        String courseSubject = "";
+                        String proffirstName = "";
+                        String proflastName = "";
+                        int units = 0;
+
+                        
+                        sql = "SELECT * FROM sections WHERE sectionID=".concat(sectionIDs[j]);
                         RS = sta.executeQuery(sql);
                         
-                        //UserSchedulesInnerPanel USIP = new UserSchedulesInnerPanel(size, studentID, s, s, WIDTH, s);
-                    }
-                    
-                    
-                    
-                    
-                    
-                    
-                    
-                    /**
-                     * JPanel usePanel; // Will be moved to its own panel class
-                    for(int i=0; i< entries; i++){
-                    usePanel = new JPanel();
-                    usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
-                    usePanel.setBackground(new Color(i*5, i*10, i*12));
+                        if(!(RS.isBeforeFirst())){
+                            
+                        }else {
+                            if(RS.next()){
+                                
+                                courseID = RS.getString("courseID");
+                                professorID = RS.getString("professorID");
+                                term = RS.getString("term");
+                                sectionSubject = RS.getString("subject");
+                                roomID = RS.getString("roomID");
+                                
+                                sql = "SELECT * FROM courses WHERE courseID=".concat(courseID);
+                                RS = sta.executeQuery(sql);
+                                if(!RS.isBeforeFirst()){
+                                    
+                                }else {
+                                    if(RS.next()){
+                                        courseName = RS.getString("course_Name");
+                                        units = RS.getInt("units");
+                                        courseSubject = RS.getString("subject");
+                                    }
+                                }
+                                
+                                sql = "SELECT * FROM professors WHERE professorID=".concat(professorID);
+                                RS = sta.executeQuery(sql);
+                                if(!RS.isBeforeFirst()){
+                                    
+                                }else {
+                                    if(RS.next()){
+                                        proffirstName = RS.getString("first_Name");
+                                        proflastName = RS.getString("last_Name");
+                                    }
+                                }
+                                
+                                UserSchedulesInnerPanel USIP = new UserSchedulesInnerPanel(size, courseName, courseSubject, term, units, proffirstName.concat(" ".concat(proflastName)),sectionIDs[j]);
+                                // usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
 
-                    innerBottomPanel.add(usePanel);
-                     */
-                    
-                    
-                
+                                USIP.setBounds(0, (int)(j * size.getHeight() * 0.25), this.getSize().width, (int)(size.getHeight() * 0.25) );
+                                add(USIP);
+                                
+                            }
+                        }
+                    }
                 }
             }
             
