@@ -54,7 +54,7 @@ public class SearchResultPanel extends JFrame{
         JPanel layoutPanel = new JPanel();
         layoutPanel.setBounds(20, 40, 550, 1000);
         layoutPanel.setLayout(null);
-        if(sectionIDs.size() > 0){
+        if(!sectionIDs.isEmpty()){
             int offset = 80;
             
             //display all classes in cart

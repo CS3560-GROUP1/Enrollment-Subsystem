@@ -21,6 +21,11 @@ public class methods {
         //INSERT INTO students (studentID, first_Name, last_Name, major) VALUES (id, first_name, last_name, major);
     }
 
+    /**
+     * 
+     * @param username
+     * @param password 
+     */
     public void logIn(String username, int password){
         //authenticate username and password input
         //password will be hashed and compared to the hashes stored in the databse
@@ -45,6 +50,13 @@ public class methods {
         }
     }
 
+    /**
+     * 
+     * @param term
+     * @param courseNum
+     * @param subject
+     * @param matchOption 
+     */
     public void search(String term, String courseNum, String subject, String matchOption){
         //search for class by choosing a subject and inputting a course number
         try {
@@ -60,21 +72,25 @@ public class methods {
                 else
                     sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.subject = '"+ subject +"';";
                 ResultSet result = statement.executeQuery(sql);
+                
                 ArrayList<String> sectionIDs = new ArrayList<String>();
                 while(result.next()){
                     System.out.println("sectionID: "+result.getString("sectionID"));
                     sectionIDs.add(result.getString("sectionID"));
                 }
+                
                 if(subject.equals("Select"))
                     sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "';";
                 else
                     sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.subject = '"+ subject +"';";
                 result = statement.executeQuery(sql);
+                
                 ArrayList<String> courseIDs = new ArrayList<String>();
                 while(result.next()){
                     System.out.println("courseID: "+result.getString("courseID"));
                     courseIDs.add(result.getString("courseID"));
                 }
+                
                 ArrayList<String> courseNames = new ArrayList<String>();
                 for(int i = 0; i < courseIDs.size(); i++){
                     sql = "SELECT courses.course_Name FROM courses WHERE courses.courseID = '" + courseIDs.get(i) + "';";
@@ -84,6 +100,7 @@ public class methods {
                         courseNames.add(result.getString("course_Name"));
                     }
                 }
+                
                 SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
             }
             else{ //if course num is also specified
@@ -286,6 +303,7 @@ public class methods {
                     return conflictCheck;
                 }
             }
+            
         }catch (SQLException ex) {
             System.err.println(ex.toString());
         }
@@ -393,6 +411,7 @@ public class methods {
                     //System.out.println("units: "+result.getString("units"));
                     course.setUnits(Integer.parseInt(result.getString("units"))); 
             }
+            /**
             //prerequisites
             ArrayList<Course> prerequisiteList = new ArrayList<Course>();
             sql = "SELECT courses.prerequisiteID FROM courses WHERE courses.courseID = '" + courseID + "';";
@@ -407,6 +426,7 @@ public class methods {
                 }
                 prerequisiteList.add(nextPrerequisite);
             }
+            
             //convert arraylist to array
             //(there's probably a better way to do this)
             if(!prerequisiteList.isEmpty()){
@@ -416,6 +436,8 @@ public class methods {
                 }
                 course.setPrerequisites(prerequisites);
             }
+            */
+            
             section.setCourse(course);
             //professorID
             sql = "SELECT sections.professorID FROM sections WHERE sections.sectionID = '" + sectionID + "' AND sections.courseID = '"+ courseID +"';";
