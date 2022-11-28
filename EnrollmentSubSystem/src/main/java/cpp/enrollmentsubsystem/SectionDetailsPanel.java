@@ -258,7 +258,7 @@ public class SectionDetailsPanel extends JFrame{
         container.add(prerequsitesLabel);
         JLabel prerequsites = new JLabel();
         //if course has no prerequisites
-        if(displaySection.getCourse().getPrerequisites() == (null)){
+        if(displaySection.getCourse().getPrerequisites()[0].getCourseID() == 0){
             prerequsites.setText("none");
         }
         else{

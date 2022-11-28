@@ -124,6 +124,8 @@ public class EnrollmentSubSystem {
             viewCart.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String[] args = {};
+                    //change "currentStudentID" to "[your id in the mock data]" to test adding to cart and cart view in debug mode
+                    //add to cart through search in normal mode, then relaunch in debug and view cart/enroll
                     CartPanel.main(args, currentStudentID);
                     frame.dispose();
                 }
@@ -246,19 +248,23 @@ public class EnrollmentSubSystem {
                     " course_Name varchar(30) not null, " +
                     " units smallint not null, " +
                     " subject varchar(25) not null, " +
-                    " term varchar(12) not null" +
+                    " term varchar(12) not null," +
+                    " prerequisiteID varchar(10)" +
                     " );";
                 statement.executeUpdate(sql);
                 
                 //sql = "INSERT INTO courses (courseID, course_Name, units, term)";
                 //statement.executeUpdate(sql);
                 
-                sql = "insert into courses (courseID, course_Name, units, subject, term) " + 
+                //set 3560 as a prerequisite for 3750
+                //just to test prerequisites
+                //(also this technically only supports each course having only 1 prerequisite)
+                sql = "insert into courses (courseID, course_Name, units, subject, term, prerequisiteID) " + 
                     " values " + 
-                    " ('3560', 'Obj-Oriented Design and Prog', '3', 'Computer Science', 'FALL'), " +
-                    " ('3500', 'Creative Prcss Theory Practice', '4', 'Philosophy', 'FALL'), " +
-                    " ('3750', 'Computers and Society', '3', 'Computer Science', 'SPRING'), " +
-                    " ('1030', 'World of Music', '3', 'Music', 'SUMMER') " +
+                    " ('3560', 'Obj-Oriented Design and Prog', '3', 'Computer Science', 'FALL',''), " +
+                    " ('3500', 'Creative Prcss Theory Practice', '4', 'Philosophy', 'FALL',''), " +
+                    " ('3750', 'Computers and Society', '3', 'Computer Science', 'SPRING', '3560'), " +
+                    " ('1030', 'World of Music', '3', 'Music', 'SUMMER','') " +
                     " ; ";
                 statement.executeUpdate(sql);
                 

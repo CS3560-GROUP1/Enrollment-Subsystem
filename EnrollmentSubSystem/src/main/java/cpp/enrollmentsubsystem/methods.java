@@ -263,42 +263,32 @@ public class methods {
                 conflictCheck = true;
                 return conflictCheck;
             }
-        }catch (SQLException ex) {
-            System.err.println(ex.toString());
-        }
-        //all this student's currently and previously enrolled courses
-        //("currently" or "previously" enrolled is denoted by the "term" attribute):
-        //SELECT course_ID FROM enrolled_classes WHERE enrolled_classes.student_ID = '"+cart.getStudent()+"';
-        ArrayList<Integer> enrolledCourses = new ArrayList<Integer>(); //query results will be added to ArrayLists
-        //prerequisite conflict
-            //get all the prerequisites from the seciton being checked's course:
-            //SELECT prerequisite_ID FROM courses WHERE courses.course_ID = '"+section.getCourse().getCourseID()+"';
-            ArrayList<Integer> coursePrerequisites = new ArrayList<Integer>();
-            //only do this check if the course has prerequisites
-            if(coursePrerequisites.size() > 0){
-                //if the course has prerequisites and the student hasn't taken any other courses, there is already a conflict
-                if(enrolledCourses.size() == 0){
+            //prerequisite conflict
+            //checks enrolled and in cart for the prerequisite of the section being checked
+            //(if it has one). if it doesn't find the prerequisite, there is a conflict
+            //(this technically counts all prerequisites as corequisites)
+            //matches should = # of prerequisites if all prerequisites are enrolled/in cart
+            int matches = 0;
+            if(section.getCourse().getPrerequisites()[0].getCourseID() != 0){
+                //for every prerequisite of this section
+                for(int i = 0; i < section.getCourse().getPrerequisites().length; i++){
+                    //check if it matches any class enrolled/in cart
+                   for(int j = 0; j < allSections.size(); j++){
+                       if(section.getCourse().getPrerequisites()[i].getCourseID() ==
+                         allSections.get(j).getCourse().getCourseID()){
+                           matches++;
+                       }
+                    } 
+                }
+                if(matches < section.getCourse().getPrerequisites().length){
+                    System.out.println("prerequisite conflict");
                     conflictCheck = true;
                     return conflictCheck;
                 }
-                else{
-                    //count the matches between prerequisites and the student's previously taken courses
-                    //if the student has taken all prerequisites this number will = the number of prerequisites
-                    int matchCount = 0; 
-                    //for each prerequisite the course has, check if the student has taken that prerequisite
-                    for(int i = 0; i < coursePrerequisites.size(); i++){
-                        for(int j = 0; j < enrolledCourses.size(); j++){
-                            if(enrolledCourses.get(j) == coursePrerequisites.get(i)){
-                                matchCount++;
-                            }
-                        }
-                    }
-                    if(matchCount != coursePrerequisites.size()){
-                        conflictCheck = true;
-                        return conflictCheck;
-                    }
-                }
             }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
         //if there are no conflicts, this should return false
         return conflictCheck;
     }
@@ -392,6 +382,29 @@ public class methods {
             while(result.next()){
                     //System.out.println("units: "+result.getString("units"));
                     course.setUnits(Integer.parseInt(result.getString("units"))); 
+            }
+            //prerequisites
+            ArrayList<Course> prerequisiteList = new ArrayList<Course>();
+            sql = "SELECT courses.prerequisiteID FROM courses WHERE courses.courseID = '" + courseID + "';";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                //System.out.println("term: "+result.getString("term"));
+                Course nextPrerequisite = new Course();
+                //only really need ID for prerequisites
+                //all other info can be gathered from ID if needed
+                if(!result.getString("prerequisiteID").isBlank()){
+                nextPrerequisite.setCourseID(Integer.parseInt(result.getString("prerequisiteID"))); 
+                }
+                prerequisiteList.add(nextPrerequisite);
+            }
+            //convert arraylist to array
+            //(there's probably a better way to do this)
+            if(!prerequisiteList.isEmpty()){
+                Course[] prerequisites = new Course[prerequisiteList.size()];
+                for(int i = 0; i < prerequisiteList.size(); i++){
+                    prerequisites[i] = prerequisiteList.get(i);
+                }
+                course.setPrerequisites(prerequisites);
             }
             section.setCourse(course);
             //professorID
