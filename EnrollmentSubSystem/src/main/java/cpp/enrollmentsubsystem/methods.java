@@ -87,7 +87,7 @@ public class methods {
                 SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
             }
             else{ //if course num is also specified
-                
+
                 if(subject.equals("Select"))
                     sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "'";
                 else
@@ -104,7 +104,7 @@ public class methods {
                         sql += " <= ";
                         break;
                 }
-                sql += "'" + courseNum + "';";
+                sql += courseNum + ";";
                 ResultSet result = statement.executeQuery(sql);
                 ArrayList<String> sectionIDs = new ArrayList<String>();
                 while(result.next()){
@@ -127,7 +127,7 @@ public class methods {
                         sql += " <= ";
                         break;
                 }
-                sql += "'" + courseNum + "';";
+                sql += courseNum + ";";
                 result = statement.executeQuery(sql);
                 ArrayList<String> courseIDs = new ArrayList<String>();
                 while(result.next()){
