@@ -1,6 +1,7 @@
 
 package cpp.enrollmentsubsystem;
 
+import static cpp.enrollmentsubsystem.LoginPanel.currentStudentID;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -123,7 +124,7 @@ public class EnrollmentSubSystem {
             viewCart.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     String[] args = {};
-                    CartPanel.main(args, null);
+                    CartPanel.main(args, currentStudentID);
                     frame.dispose();
                 }
             });
