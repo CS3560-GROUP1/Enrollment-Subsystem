@@ -326,6 +326,12 @@ public class SectionDetailsPanel extends JFrame{
                         JOptionPane.ERROR_MESSAGE);
                     }
                 }
+                else {
+                    JOptionPane.showMessageDialog( getParent(), 
+                        "Error adding section\n"+errorMsg, 
+                        "Add section error", 
+                        JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         container.add(add);

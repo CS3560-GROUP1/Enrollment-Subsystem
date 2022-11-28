@@ -246,8 +246,7 @@ public class methods {
                         System.out.println("schedule conflict");
                         errorMsg = "schedule conflict";
                         conflictCheck = true;
-                        throw new Exception(errorMsg);
-                        //return conflictCheck;
+                        return conflictCheck;
                     }
                 }
             }
@@ -264,8 +263,7 @@ public class methods {
                     System.out.println("max unit conflict");
                     errorMsg = "max unit conflict";
                     conflictCheck = true;
-                    throw new Exception(errorMsg);
-                    //return conflictCheck;
+                    return conflictCheck;
                 }
             }
             //enroll cap conflict
@@ -283,8 +281,7 @@ public class methods {
                 System.out.println("enroll cap conflict");
                 errorMsg = "enroll cap conflict";
                 conflictCheck = true;
-                throw new Exception(errorMsg);
-                //return conflictCheck;
+                return conflictCheck;
             }
             //prerequisite conflict
             //checks enrolled and in cart for the prerequisite of the section being checked
@@ -307,8 +304,7 @@ public class methods {
                     System.out.println("prerequisite conflict");
                     errorMsg = "prerequisite conflict";
                     conflictCheck = true;
-                    throw new Exception(errorMsg);
-                    //return conflictCheck;
+                    return conflictCheck;
                 }
             }
             
@@ -318,12 +314,6 @@ public class methods {
                             "Error adding section", 
                             "Schedule conflict!", 
                             JOptionPane.ERROR_MESSAGE);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog( null, 
-            "Error adding section\n"+e.getMessage(), 
-            "Error", 
-            JOptionPane.ERROR_MESSAGE);
         }
         //if there are no conflicts, this should return false
         return conflictCheck;
