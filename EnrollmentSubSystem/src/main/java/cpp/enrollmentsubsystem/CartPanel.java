@@ -192,8 +192,8 @@ public class CartPanel extends JFrame{
         finalize.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //confirm/error dialog
-                if(viewCart.courses.length > 0){
-                    m.finalizeCart(viewCart);
+                if(sectionIDs.size() > 0){
+                    m.finalizeCart(studentID, sectionIDs);
                     JFrame alertFrame = new JFrame();
                     alertFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                     alertFrame.setVisible(false);
@@ -203,7 +203,7 @@ public class CartPanel extends JFrame{
                         JOptionPane.INFORMATION_MESSAGE);
                     alertFrame.dispose();
                     //remove all section from cart
-                    viewCart.setSections(new Section[0]);
+                    //viewCart.setSections(new Section[0]);
                     //reset this window to display new info
                     String[] args = {};
                     CartPanel.main(args, studentID);
