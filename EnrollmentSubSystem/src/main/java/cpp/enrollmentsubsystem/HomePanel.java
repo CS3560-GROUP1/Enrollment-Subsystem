@@ -112,8 +112,18 @@ public class HomePanel extends JFrame{
                 switch(evt.getActionCommand()){
                     case "Search" ->{
                         System.out.println(" Search" );
+                        SearchPanel searchPanel =
+                        new SearchPanel(false);
+                        searchPanel.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                        searchPanel.setVisible(true);
+
+                    }
+                    case "Cart" -> {
                         
-                        new SearchPanel(false).setVisible(true);
+                        CartPanel cartPanel =
+                        new CartPanel(studentID);
+                        cartPanel.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+                        cartPanel.setVisible(true);
 
                     }
                     case "Enroll" ->{
