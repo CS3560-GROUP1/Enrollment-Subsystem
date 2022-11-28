@@ -24,10 +24,13 @@ public class SearchPanel extends javax.swing.JFrame {
     private javax.swing.JTextField numTextField;
     private javax.swing.JCheckBox openCheck;
     
+    private boolean debug;
+    
     /**
      * Creates new form SearchPanel
      */
     public SearchPanel(boolean debugMode) {
+        debug = debugMode;
         initComponents(debugMode);
     }
                         
@@ -159,7 +162,7 @@ public class SearchPanel extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {                                         
         System.out.println(termCombo.getItemAt(termCombo.getSelectedIndex()));
         methods m = new methods();
-        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText(), subjectCombo.getItemAt(subjectCombo.getSelectedIndex()), searchCombo.getItemAt(searchCombo.getSelectedIndex()));
+        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText(), subjectCombo.getItemAt(subjectCombo.getSelectedIndex()), searchCombo.getItemAt(searchCombo.getSelectedIndex()), debug);
         dispose();
     }    
     

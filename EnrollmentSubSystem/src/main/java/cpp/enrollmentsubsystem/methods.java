@@ -57,7 +57,7 @@ public class methods {
      * @param subject
      * @param matchOption 
      */
-    public void search(String term, String courseNum, String subject, String matchOption){
+    public void search(String term, String courseNum, String subject, String matchOption, boolean debug){
         //search for class by choosing a subject and inputting a course number
         try {
             Connection con;
@@ -101,7 +101,7 @@ public class methods {
                     }
                 }
                 
-                SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
+                SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum , debug);
             }
             else{ //if course num is also specified
 
@@ -160,7 +160,7 @@ public class methods {
                         courseNames.add(result.getString("course_Name"));
                     }
                 }
-                SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
+                SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum, debug);
             }
             con.close();
         }catch (SQLException ex) {

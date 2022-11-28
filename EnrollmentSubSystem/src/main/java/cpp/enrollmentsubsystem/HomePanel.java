@@ -111,10 +111,10 @@ public class HomePanel extends JFrame{
             ActionListener menuListner = evt -> {
                 switch(evt.getActionCommand()){
                     case "Search" ->{
+                        
                         System.out.println(" Search" );
                         SearchPanel searchPanel =
                         new SearchPanel(false);
-                        searchPanel.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
                         searchPanel.setVisible(true);
 
                     }

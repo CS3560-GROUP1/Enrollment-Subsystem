@@ -25,12 +25,15 @@ import javax.swing.SwingUtilities;
 
 public class SearchResultPanel extends JFrame{
     
-    public SearchResultPanel(ArrayList<String> sectionIDs, ArrayList<String> courseIDs, ArrayList<String> courseNames, String searchTerm, String searchCourseNum){
+    public SearchResultPanel(ArrayList<String> sectionIDs, ArrayList<String> courseIDs, ArrayList<String> courseNames, String searchTerm, String searchCourseNum, boolean debug){
         setSize(new Dimension(600, 400));
         setLocationRelativeTo(null);
         setTitle("Search Results");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(null);
+        if(debug){
+            setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        } else {
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }        setLayout(null);
         JLabel title = new JLabel();
         String search = "Term: " + searchTerm;
         if(!searchCourseNum.isBlank()){
@@ -45,9 +48,9 @@ public class SearchResultPanel extends JFrame{
         back.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 //close this window and return to search window
-                String[] args = {};
-                SearchPanel.main(args);
+                new SearchPanel(debug).setVisible(true);
                 dispose();
+                
             }
         });
         add(back);
@@ -85,7 +88,7 @@ public class SearchResultPanel extends JFrame{
                         String[] args = {};
                         methods m = new methods();
                         SectionDetailsPanel.main(args, m.setSection(chosenSectionID, chosenCourseID, chosenCourseName), null, 
-                        sectionIDs, courseIDs, courseNames, searchTerm, searchCourseNum);
+                        sectionIDs, courseIDs, courseNames, searchTerm, searchCourseNum, debug);
                         dispose();
                     }
                 });
@@ -109,9 +112,9 @@ public class SearchResultPanel extends JFrame{
         add(scrollPanel);
     }
     
-    public static void main(String[] args, ArrayList<String> sectionIDs, ArrayList<String> courseIDs, ArrayList<String> courseNames, String searchTerm, String searchCourseNum){
+    public static void main(String[] args, ArrayList<String> sectionIDs, ArrayList<String> courseIDs, ArrayList<String> courseNames, String searchTerm, String searchCourseNum, boolean debug){
         SwingUtilities.invokeLater( () -> {
-            new SearchResultPanel(sectionIDs, courseIDs, courseNames, searchTerm, searchCourseNum).setVisible(true);
+            new SearchResultPanel(sectionIDs, courseIDs, courseNames, searchTerm, searchCourseNum, debug).setVisible(true);
         });
     }
     
