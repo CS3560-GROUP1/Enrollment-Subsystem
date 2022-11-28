@@ -165,6 +165,9 @@ public class SearchPanel extends javax.swing.JFrame {
     
     private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {
         numTextField.setText(null);
+        termCombo.setSelectedIndex(0);
+        subjectCombo.setSelectedIndex(0);
+        searchCombo.setSelectedIndex(0);
     }
 
 
