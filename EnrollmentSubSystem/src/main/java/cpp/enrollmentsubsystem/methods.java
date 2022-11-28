@@ -281,15 +281,24 @@ public class methods {
         
     }
 
-    public void finalizeCart(CourseCart cart){
+    public void finalizeCart(String studentID, ArrayList<String> sectionIDs){
         System.out.println("finalize cart called");
-        //iterate over all sections in student's cart and enroll student in each section
-        if(cart != null){
-            if(cart.courses.length > 0){
-                for (int i = 0; i < cart.courses.length; i++) {
-                    enroll(cart.student, cart.courses[i]);
+        //moves sections in cart table to enrolled table
+        //and remove all secitons in cart table
+        try{
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "";
+            if(sectionIDs.size() > 0){
+                for(int i = 0; i < sectionIDs.size(); i++){
+                    sql = "INSERT INTO enrolled_classes (sectionID, studentID) VALUES ('"+sectionIDs.get(i)+"','"+studentID+"')";
+                    statement.executeUpdate(sql);
+                    removeFromCart(sectionIDs.get(i), studentID);
                 }
             }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
         }
     }
 
