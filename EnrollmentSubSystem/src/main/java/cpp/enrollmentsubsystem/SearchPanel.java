@@ -70,7 +70,7 @@ public class SearchPanel extends javax.swing.JFrame {
         });
 
         optionsLabel.setText("Search options");
-        searchCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "test 3", "Item 2", "Item 3", "Item 4" }));
+        searchCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "is exactly", "greater than or equal to", "less than or equal to"}));
 
 
         searchButton.setText("Search");
@@ -159,7 +159,7 @@ public class SearchPanel extends javax.swing.JFrame {
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {                                         
         System.out.println(termCombo.getItemAt(termCombo.getSelectedIndex()));
         methods m = new methods();
-        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText(), subjectCombo.getItemAt(subjectCombo.getSelectedIndex()));
+        m.search(termCombo.getItemAt(termCombo.getSelectedIndex()), numTextField.getText(), subjectCombo.getItemAt(subjectCombo.getSelectedIndex()), searchCombo.getItemAt(searchCombo.getSelectedIndex()));
         dispose();
     }    
     

@@ -45,7 +45,7 @@ public class methods {
         }
     }
 
-    public void search(String term, String courseNum, String subject){
+    public void search(String term, String courseNum, String subject, String matchOption){
         //search for class by choosing a subject and inputting a course number
         try {
             Connection con;
@@ -86,12 +86,25 @@ public class methods {
                 }
                 SearchResultPanel.main(args, sectionIDs, courseIDs, courseNames, term, courseNum);
             }
-            else{
-                //if course num is also specified
+            else{ //if course num is also specified
+                
                 if(subject.equals("Select"))
-                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "'";
                 else
-                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "' AND sections.subject = '"+ subject +"';";
+                    sql = "SELECT sections.sectionID FROM sections WHERE sections.term = '" + term + "' AND sections.subject = '"+ subject +"'";
+                sql += " AND sections.courseID";
+                switch (matchOption) {
+                    case "is exactly":
+                        sql += " = ";
+                        break;
+                    case "greater than or equal to":
+                        sql += " >= ";
+                        break;
+                    case "less than or equal to":
+                        sql += " <= ";
+                        break;
+                }
+                sql += "'" + courseNum + "';";
                 ResultSet result = statement.executeQuery(sql);
                 ArrayList<String> sectionIDs = new ArrayList<String>();
                 while(result.next()){
@@ -99,9 +112,22 @@ public class methods {
                     sectionIDs.add(result.getString("sectionID"));
                 }
                 if(subject.equals("Select"))
-                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "';";
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "'";
                 else
-                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.courseID = '" + courseNum + "' AND sections.subject = '"+ subject +"';";
+                    sql = "SELECT sections.courseID FROM sections WHERE sections.term = '" + term + "' AND sections.subject = '"+ subject +"'";
+                sql += " AND sections.courseID";
+                switch (matchOption) {
+                    case "is exactly":
+                        sql += " = ";
+                        break;
+                    case "greater than or equal to":
+                        sql += " >= ";
+                        break;
+                    case "less than or equal to":
+                        sql += " <= ";
+                        break;
+                }
+                sql += "'" + courseNum + "';";
                 result = statement.executeQuery(sql);
                 ArrayList<String> courseIDs = new ArrayList<String>();
                 while(result.next()){
