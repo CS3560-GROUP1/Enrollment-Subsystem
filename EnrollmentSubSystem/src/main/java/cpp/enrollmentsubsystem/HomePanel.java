@@ -45,6 +45,8 @@ public class HomePanel extends JFrame{
     public Vector<String> dropList;
     public String studentID;
     
+    int bottomScrollPaneOffset;
+    
     public HomePanel(String stuID){
         super();
         this.studentID = stuID;
@@ -58,6 +60,7 @@ public class HomePanel extends JFrame{
         );
         setSize(size);
        
+        bottomScrollPaneOffset = (int) (size.getWidth() / 50);
         
         facePanel = new JPanel();
         layout = new CardLayout(0, 0);
@@ -122,6 +125,10 @@ public class HomePanel extends JFrame{
                         dropList.forEach((n) -> m.dropSection(studentID, n));
                         populateHomePanel();
                     }
+                    case "Sign Out" -> {
+                        new LoginPanel().setVisible(true);
+                        dispose();
+                    }
                     default -> {
                         System.out.println(evt.toString());
                     }
@@ -150,9 +157,16 @@ public class HomePanel extends JFrame{
             mi3.addActionListener(menuListner);
             mi3.setActionCommand("Enroll");
             
+            JMenuItem mi4 = new JMenuItem();
+            mi4.setText("Sign Out");
+            mi4.addActionListener(menuListner);
+            mi4.setActionCommand("Sign Out");
+            
             menu.add(mi1);
             menu.add(mi2);
             menu.add(mi3);
+            menu.add(mi4);
+
 
             JButton menuButton = new JButton("Menu");
             ActionListener menuActivator = evt -> {
@@ -174,7 +188,7 @@ public class HomePanel extends JFrame{
             
             uSchedulesPanel = new UserSchedulesPanel(size);
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
-            bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
+            bottomScrollPane.setBounds(bottomScrollPaneOffset, bottomScrollPaneOffset, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             
         bottomPanel.add(bottomScrollPane);
         
@@ -225,7 +239,7 @@ public class HomePanel extends JFrame{
             dropList = new Vector<String>();
             uSchedulesPanel = new UserSchedulesPanel(this.getSize(), con, studentID, dropList);
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
-            bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
+            bottomScrollPane.setBounds(bottomScrollPaneOffset, bottomScrollPaneOffset, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             bottomPanel.add(bottomScrollPane);
             
             

@@ -10,6 +10,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -178,17 +179,28 @@ public class SectionDetailsPanel extends JFrame{
         container.add(enrolledLabel);
         JLabel enrolled = new JLabel();
         //this info would be from the database
-        //SELECT COUNT(student_ID) FROM enrollment WHERE course_ID = '"+section.getCourse().getCourseID()+"' 
-        //AND section_ID = '"+section.getNumber()+"';
-        //this should return an ArrayList with only 1 value
-        ArrayList<Integer> numEnrolled = new ArrayList<Integer>();
-        if(numEnrolled.size() > 0){
+        int numEnrolled = 0;
+        try{
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "";
+            sql = "SELECT COUNT(studentID) as num_enrolled FROM enrolled_classes WHERE enrolled_classes.sectionID = '"+displaySection.getNumber()+"'";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                    System.out.println("num enrolled: "+result.getString("num_enrolled"));
+                    numEnrolled = Integer.parseInt(result.getString("num_enrolled"));
+                }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
+        if(numEnrolled > 0){
             //assuming numEnrolled includes total of both enrolled and waitlisted
-            if(numEnrolled.get(0) > displaySection.getEnrollCapcity()){
+            if(numEnrolled > displaySection.getEnrollCapcity()){
                 enrolled.setText(((Integer)displaySection.getEnrollCapcity()).toString());
             }
             else{
-                enrolled.setText(numEnrolled.get(0).toString());
+                enrolled.setText(((Integer)numEnrolled).toString());
             }
         }
         else{
@@ -203,16 +215,12 @@ public class SectionDetailsPanel extends JFrame{
         waitlistedLabel.setBounds(400, 250, 150, 20);
         container.add(waitlistedLabel);
         JLabel waitlisted = new JLabel();
-        //this info would be from the database
-        //SELECT COUNT(student_ID) FROM enrollment WHERE course_ID = '"+section.getCourse().getCourseID()+"' 
-        //AND section_ID = '"+section.getNumber()+"';
-        //this should return an ArrayList with only 1 value
-        if(numEnrolled.size() > 0){
+        if(numEnrolled > 0){
             //assuming numEnrolled includes total of both enrolled and waitlisted
             //so total - enrollment capacity = waitlisted
             //and the cap to not allow any additions is enrollment capacity + waitlist capacity
-            if(numEnrolled.get(0) > displaySection.getEnrollCapcity()){
-                Integer wl = numEnrolled.get(0) - displaySection.getEnrollCapcity();
+            if(numEnrolled > displaySection.getEnrollCapcity()){
+                Integer wl = numEnrolled - displaySection.getEnrollCapcity();
                 waitlisted.setText(wl.toString());
             }
             else{
@@ -250,7 +258,7 @@ public class SectionDetailsPanel extends JFrame{
         container.add(prerequsitesLabel);
         JLabel prerequsites = new JLabel();
         //if course has no prerequisites
-        if(displaySection.getCourse().getPrerequisites() == (null)){
+        if(displaySection.getCourse().getPrerequisites()[0].getCourseID() == 0){
             prerequsites.setText("none");
         }
         else{
@@ -282,32 +290,35 @@ public class SectionDetailsPanel extends JFrame{
         add.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 methods m = new methods();
-                m.addToCart(displaySection, cart);
-                try{
-                    Connection con;
-                    con = getSQLConnection();
-                    Statement statement = con.createStatement();
-                    String sql = "";
-                    sql = "INSERT INTO student_cart_entries (studentID, sectionID)" + 
-                    " values " + 
-                    " ("+ currentStudentID +", "+ displaySection.getNumber() +");";
-                    statement.executeUpdate(sql);
-                    JOptionPane.showMessageDialog( getParent(), 
-                    "Section added to cart!\n"
-                    + "Returning to search results", 
-                    "Add section success", 
-                    JOptionPane.INFORMATION_MESSAGE);
-                    //close this window and reload search window
-                    String[] args = {};
-                    SearchResultPanel.main(args, sectionIDs, courseIDs, 
-                            courseNames, searchTerm, searchCourseNum);
-                    dispose();
-                }catch (SQLException ex) {
-                    System.err.println(ex.toString());
-                    JOptionPane.showMessageDialog( getParent(), 
-                    "Error adding section", 
-                    "Add section error", 
-                    JOptionPane.ERROR_MESSAGE);
+                m.addToCart(displaySection, currentStudentID);
+                //only add the section if there are no conflicts
+                if(!m.checkConflicts(displaySection, currentStudentID)){
+                    try{
+                        Connection con;
+                        con = getSQLConnection();
+                        Statement statement = con.createStatement();
+                        String sql = "";
+                        sql = "INSERT INTO student_cart_entries (studentID, sectionID)" + 
+                        " values " + 
+                        " ("+ currentStudentID +", "+ displaySection.getNumber() +");";
+                        statement.executeUpdate(sql);
+                        JOptionPane.showMessageDialog( getParent(), 
+                        "Section added to cart!\n"
+                        + "Returning to search results", 
+                        "Add section success", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                        //close this window and reload search window
+                        String[] args = {};
+                        SearchResultPanel.main(args, sectionIDs, courseIDs, 
+                                courseNames, searchTerm, searchCourseNum);
+                        dispose();
+                    }catch (SQLException ex) {
+                        System.err.println(ex.toString());
+                        JOptionPane.showMessageDialog( getParent(), 
+                        "Error adding section", 
+                        "Add section error", 
+                        JOptionPane.ERROR_MESSAGE);
+                    }
                 }
             }
         });
@@ -324,3 +335,4 @@ public class SectionDetailsPanel extends JFrame{
         });
     }
 }
+
