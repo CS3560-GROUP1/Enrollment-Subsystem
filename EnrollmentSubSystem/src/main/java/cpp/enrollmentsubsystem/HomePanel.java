@@ -7,6 +7,9 @@ package cpp.enrollmentsubsystem;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -30,8 +33,12 @@ public class HomePanel extends JFrame{
     private JPanel facePanel;
     private CardLayout layout;
 
+    private JPanel bottomPanel;
     private JLabel termLabel;
     private JLabel usernameLabel;
+    
+    private UserSchedulesPanel uSchedulesPanel;
+    private JScrollPane bottomScrollPane;
     
     public HomePanel(){
         super();
@@ -63,18 +70,33 @@ public class HomePanel extends JFrame{
             JPanel leftTopPanel = new JPanel();
             leftTopPanel.setBounds(0,0,size.width/2, topPanel.getHeight() );
             leftTopPanel.setBackground(Color.green);
-
+            leftTopPanel.setLayout(new GridBagLayout());
+            
             JPanel rightTopPanel = new JPanel();
             rightTopPanel.setBounds(size.width/2, 0, size.width/2, topPanel.getHeight());
             rightTopPanel.setBackground(Color.CYAN);
 
+            {
+            GridBagConstraints c = new GridBagConstraints();
+            c.fill = GridBagConstraints.HORIZONTAL;
+            c.ipady = (int) (size.getHeight() * 0.05);
             JLabel myScheduleLabel = new JLabel("My Schedule - Term: ");
-            leftTopPanel.add(myScheduleLabel);
+            c.gridx = 1;
+            c.gridy = 1;
+            leftTopPanel.add(myScheduleLabel, c);
             termLabel = new JLabel("Mock Term 2022");
-            leftTopPanel.add(termLabel);
+        
+            c.gridx = 3;
+            c.gridy = 1;
+            leftTopPanel.add(termLabel, c);
 
             usernameLabel = new JLabel("Mock Name");
-            leftTopPanel.add(usernameLabel);
+            float fontSize = size.width / 50;
+            usernameLabel.setFont(usernameLabel.getFont().deriveFont(fontSize));
+            c.gridx = 2;
+            c.gridy = 3;
+            leftTopPanel.add(usernameLabel, c);
+            }
 
             //RIGHT
             ActionListener menuListner = evt -> {
@@ -111,12 +133,18 @@ public class HomePanel extends JFrame{
             mi1.setActionCommand("Search");
 
             JMenuItem mi2 = new JMenuItem();
-            mi2.setText("Enroll");
+            mi2.setText("Cart");
             mi2.addActionListener(menuListner);
-            mi2.setActionCommand("Enroll");
+            mi2.setActionCommand("Cart");
+            
+            JMenuItem mi3 = new JMenuItem();
+            mi3.setText("Enroll");
+            mi3.addActionListener(menuListner);
+            mi3.setActionCommand("Enroll");
             
             menu.add(mi1);
             menu.add(mi2);
+            menu.add(mi3);
 
             JButton menuButton = new JButton("Menu");
             ActionListener menuActivator = evt -> {
@@ -132,28 +160,13 @@ public class HomePanel extends JFrame{
         homePanel.add(topPanel);
 
             //Bottom Panel - Set up will be moved to after a user logins to receive from where to pull home screen data.
-        JPanel bottomPanel = new JPanel(null);
+        bottomPanel = new JPanel(null);
         bottomPanel.setBackground(Color.blue);
-        bottomPanel.setBounds(0, topPanel.getHeight(), (size.width), (int)(size.height - topPanel.getHeight() ));
-        
-            int entries = 20;
-            JPanel innerBottomPanel = new JPanel(null); // TO BE Moved to method with sql query to reach for information
-            innerBottomPanel.setSize( (int)(size.getWidth() * 0.8), (entries * ((int)(size.getHeight() * 0.25)) ) ); // inner panell size set
-            innerBottomPanel.setPreferredSize(innerBottomPanel.getSize()); // scroll requires a preferred size
-
-            JPanel usePanel; // Will be moved to its own panel class
-            for(int i=0; i< entries; i++){
-                usePanel = new JPanel();
-                usePanel.setBounds( 0, i*(int)(size.getHeight() * 0.25), (innerBottomPanel.getWidth()), (int)(size.getHeight() * 0.25));
-                usePanel.setBackground(new Color(i*5, i*10, i*12));
-
-                innerBottomPanel.add(usePanel);
-            }
+        bottomPanel.setBounds(0, topPanel.getHeight(), (size.width), (int)(size.height - topPanel.getHeight() ));     
             
-
-            JScrollPane bottomScrollPane = new JScrollPane(innerBottomPanel);
-            bottomScrollPane.setBackground(Color.blue);
-            bottomScrollPane.setBounds(10, 10, innerBottomPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
+            uSchedulesPanel = new UserSchedulesPanel(size);
+            bottomScrollPane = new JScrollPane(uSchedulesPanel);
+            bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             
         bottomPanel.add(bottomScrollPane);
         
@@ -180,7 +193,7 @@ public class HomePanel extends JFrame{
         
         try (Connection con = EnrollmentSubSystem.getSQLConnection() ){
             
-            System.out.println(studentID);
+            //System.out.println(studentID);
             
             String sql0 = "SELECT * FROM students WHERE studentID=?; ";
             PreparedStatement pSta = con.prepareStatement(sql0);
@@ -198,6 +211,13 @@ public class HomePanel extends JFrame{
                 }
                 
             }
+            
+            bottomScrollPane.remove(uSchedulesPanel);
+            bottomPanel.remove(bottomScrollPane);
+            uSchedulesPanel = new UserSchedulesPanel(this.getSize(), con, studentID);
+            bottomScrollPane = new JScrollPane(uSchedulesPanel);
+            bottomScrollPane.setBounds(10, 10, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
+            bottomPanel.add(bottomScrollPane);
             
             
         } catch (SQLException e) { System.err.println( "Connection Failed (Home Panel Population): " + e.toString() ); }

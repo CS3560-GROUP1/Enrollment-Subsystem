@@ -295,6 +295,15 @@ public class EnrollmentSubSystem {
                     " primary key (sectionID, studentID) " +
                     ");" ;
                 statement.executeUpdate(sql);
+                
+                sql = "insert into enrolled_classes (sectionID, studentID) " + 
+                    " values " + 
+                    " ('1', '0'), " +
+                    " ('2', '0'), " +
+                    " ('3', '0'), " +
+                    " ('4', '0') " +
+                    " ; ";
+                statement.executeUpdate(sql);
             }
             if(!(tableSQLExist(con, "student_cart_entries"))){
                 sql = "create table student_cart_entries ( " +
