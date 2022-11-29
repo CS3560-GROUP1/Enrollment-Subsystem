@@ -5,7 +5,6 @@
 package cpp.enrollmentsubsystem;
 
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;

@@ -221,7 +221,10 @@ public class EnrollmentSubSystem {
                     " ('1', 'Tannaz', 'Rezaei Damavandi', 'Computer Science'), " +
                     " ('2', 'Patrick', 'Polk', 'Philosophy'), " +
                     " ('3', 'Sander', 'Eller', 'Computer Science'), " +
-                    " ('4', 'Paula', 'Propst', 'Music') " +
+                    " ('4', 'Paula', 'Propst', 'Music'), " +
+
+                    " ('5', 'Tony', 'Diaz', 'Computer Science'), " +
+                    " ('6', 'Lorena', 'Turner', 'Art') " +
                     " ; ";
                 statement.executeUpdate(sql);
             }
@@ -238,7 +241,12 @@ public class EnrollmentSubSystem {
                     " ('2643', '35', '10'), " +
                     " ('348', '30', '11'), " +
                     " ('2005', '42', '15'), " +
-                    " ('1029', '28', '8') " +
+                    " ('1029', '28', '8'), " +
+
+                    " ('1570', '34', '8'), " +
+                    " ('2230', '30', '10'), " +
+                    " ('2400', '30', '10'), " +
+                    " ('1350', '30', '10') " +
                     " ; ";
                 statement.executeUpdate(sql);
             }
@@ -264,7 +272,11 @@ public class EnrollmentSubSystem {
                     " ('3560', 'Obj-Oriented Design and Prog', '3', 'Computer Science', 'FALL',''), " +
                     " ('3500', 'Creative Prcss Theory Practice', '4', 'Philosophy', 'FALL',''), " +
                     " ('3750', 'Computers and Society', '3', 'Computer Science', 'SPRING', '3560'), " +
-                    " ('1030', 'World of Music', '3', 'Music', 'SUMMER','') " +
+                    " ('1030', 'World of Music', '3', 'Music', 'SUMMER',''), " +
+
+                    " ('2450', 'User Interface Dsng and Prgmng', '3', 'Computer Science', 'WINTER',''), " +
+                    " ('2260', 'Prob and Stats for CS Engr', '3', 'Mathematics', 'WINTER',''), " +
+                    " ('2280', 'Undrstnding and Apprctng Image', '3', 'ART', 'FALL','') " +
                     " ; ";
                 statement.executeUpdate(sql);
                 
@@ -272,8 +284,8 @@ public class EnrollmentSubSystem {
             if(!(tableSQLExist(con, "sections"))){
                 sql = "create table sections ( " +
                     " sectionID varchar(10) unique not null primary key, " +
-                    " courseID varchar(10) unique not null, " +
-                    " professorID varchar(10) unique not null, " +
+                    " courseID varchar(10) not null, " +
+                    " professorID varchar(10) not null, " +
                     " term varchar(20), " +
                     " subject varchar(20), " +
                     " roomID varchar(10) unique not null, " +
@@ -288,7 +300,13 @@ public class EnrollmentSubSystem {
                     " ('1', '3560', '1', 'FALL', 'Computer Science', '2643'), " +
                     " ('2', '3500', '2', 'FALL', 'Philosophy', '348'), " +
                     " ('3', '3750', '3', 'SPRING', 'Computer Science', '2005'), " +
-                    " ('4', '1030', '4', 'SUMMER', 'Music', '1029') " +
+                    " ('4', '1030', '4', 'SUMMER', 'Music', '1029'), " +
+
+                    " ('5', '2450', '5', 'WINTER', 'Computer Science', '1570'), " +
+                    " ('7', '2450', '5', 'WINTER', 'Computer Science', '2230'), " +
+                    " ('6', '2260', '6', 'WINTER', 'Computer Science', '2400'), " +
+                    " ('8', '2280', '4', 'FALL', 'ART', '1350') "  +
+
                     " ; ";
                 statement.executeUpdate(sql);
 
@@ -346,7 +364,12 @@ public class EnrollmentSubSystem {
                     " ('1', '17:30', '18:45', 1, 0, 1, 0, 0, 0, 0), " +
                     " ('2', '16:00', '17:00', 1, 0, 1, 0, 1, 0, 0), " +
                     " ('3', '13:00', '14:15', 0, 1, 0, 1, 0, 0, 0), " +
-                    " ('4', '14:30', '15:30', 1, 1, 1, 0, 0, 0, 0) " +
+                    " ('4', '14:30', '15:30', 1, 1, 1, 0, 0, 0, 0), " +
+
+                    " ('5', '16:00', '17:00', 0, 1, 0, 1, 0, 0, 0), " +
+                    " ('6', '13:00', '14:15', 1, 0, 1, 0, 0, 0, 0), " +
+                    " ('7', '19:00', '20:00', 1, 0, 1, 0, 0, 0, 0), " +
+                    " ('8', '17:30', '18:45', 1, 0, 1, 0, 0, 0, 0) " +
                     " ; ";
                 statement.executeUpdate(sql);
             }

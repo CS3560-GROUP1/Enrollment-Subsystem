@@ -15,7 +15,6 @@ import javax.swing.JCheckBox;
 import java.sql.Time;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.*;  
 import java.awt.event.*;   
 /**
  *

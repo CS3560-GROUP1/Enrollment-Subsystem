@@ -2,7 +2,6 @@ package cpp.enrollmentsubsystem;
 
 import static cpp.enrollmentsubsystem.EnrollmentSubSystem.getSQLConnection;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -429,7 +428,7 @@ public class methods {
                     //System.out.println("units: "+result.getString("units"));
                     course.setUnits(Integer.parseInt(result.getString("units"))); 
             }
-            /**
+            
             //prerequisites
             ArrayList<Course> prerequisiteList = new ArrayList<Course>();
             sql = "SELECT courses.prerequisiteID FROM courses WHERE courses.courseID = '" + courseID + "';";
@@ -454,7 +453,7 @@ public class methods {
                 }
                 course.setPrerequisites(prerequisites);
             }
-            */
+            
             
             section.setCourse(course);
             //professorID
