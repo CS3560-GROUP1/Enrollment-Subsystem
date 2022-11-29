@@ -2,6 +2,7 @@ package cpp.enrollmentsubsystem;
 
 import static cpp.enrollmentsubsystem.EnrollmentSubSystem.getSQLConnection;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -245,7 +246,8 @@ public class methods {
                         System.out.println("schedule conflict");
                         errorMsg = "schedule conflict";
                         conflictCheck = true;
-                        return conflictCheck;
+                        throw new Exception(errorMsg);
+                        //return conflictCheck;
                     }
                 }
             }
@@ -262,7 +264,8 @@ public class methods {
                     System.out.println("max unit conflict");
                     errorMsg = "max unit conflict";
                     conflictCheck = true;
-                    return conflictCheck;
+                    throw new Exception(errorMsg);
+                    //return conflictCheck;
                 }
             }
             //enroll cap conflict
@@ -280,7 +283,8 @@ public class methods {
                 System.out.println("enroll cap conflict");
                 errorMsg = "enroll cap conflict";
                 conflictCheck = true;
-                return conflictCheck;
+                throw new Exception(errorMsg);
+                //return conflictCheck;
             }
             //prerequisite conflict
             //checks enrolled and in cart for the prerequisite of the section being checked
@@ -303,7 +307,8 @@ public class methods {
                     System.out.println("prerequisite conflict");
                     errorMsg = "prerequisite conflict";
                     conflictCheck = true;
-                    return conflictCheck;
+                    throw new Exception(errorMsg);
+                    //return conflictCheck;
                 }
             }
             
@@ -313,6 +318,12 @@ public class methods {
                             "Error adding section", 
                             "Schedule conflict!", 
                             JOptionPane.ERROR_MESSAGE);
+        }
+        catch (Exception e) {
+            JOptionPane.showMessageDialog( null, 
+            "Error adding section\n"+e.getMessage(), 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
         }
         //if there are no conflicts, this should return false
         return conflictCheck;
@@ -368,9 +379,6 @@ public class methods {
 
     public void dropSection(String studentID, String sectionID){
         //drop enrolled section
-        //DELETE FROM enrolled_classes WHERE enrolled_classes.student_ID = '"+student.getID()+"'
-        //AND enrolled_classes.course_ID = '"+section.getCourse().getCourseID()+"'
-        //AND enrolled_classes.section_ID = '"+section.getNumber()+"';
         try{
             Connection con;
             con = getSQLConnection();
@@ -418,7 +426,6 @@ public class methods {
                     //System.out.println("units: "+result.getString("units"));
                     course.setUnits(Integer.parseInt(result.getString("units"))); 
             }
-            
             //prerequisites
             ArrayList<Course> prerequisiteList = new ArrayList<Course>();
             sql = "SELECT courses.prerequisiteID FROM courses WHERE courses.courseID = '" + courseID + "';";
@@ -443,7 +450,6 @@ public class methods {
                 }
                 course.setPrerequisites(prerequisites);
             }
-            
             
             section.setCourse(course);
             //professorID
@@ -568,6 +574,70 @@ public class methods {
             System.err.println(ex.toString());
         }
         return section;
+    }
+    
+    public String enrolledOrWaitlisted(String studentID, String sectionID){
+        String status = "";
+        int numEnrolled = 0;
+        int enrollCapacity = 0;
+        int waitlistCapacity = 0;
+        int index = 0;
+        String courseID = "";
+        String roomID = "";
+        ArrayList<String> students = new ArrayList<String>();
+        try{
+            Connection con;
+            con = getSQLConnection();
+            Statement statement = con.createStatement();
+            String sql = "";
+            //course ID
+            sql = "SELECT sections.courseID FROM sections WHERE sections.sectionID = '"+sectionID+"'";
+            ResultSet result = statement.executeQuery(sql);
+            while(result.next()){
+                courseID = result.getString("courseID");
+            }
+            //roomID
+            sql = "SELECT sections.roomID FROM sections WHERE sections.sectionID = '" + sectionID + "' AND sections.courseID = '"+ courseID +"';";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                    roomID = result.getString("roomID"); 
+            }
+            //enrollment capacity
+            sql = "SELECT rooms.enrollment_Capacity FROM rooms WHERE rooms.roomID = '" + roomID + "';";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                enrollCapacity = Integer.parseInt(result.getString("enrollment_Capacity")); 
+            }
+            //waitlist capacity
+            sql = "SELECT rooms.wait_List_Capacity FROM rooms WHERE rooms.roomID = '" + roomID + "';";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                waitlistCapacity = Integer.parseInt(result.getString("wait_List_Capacity")); 
+            }
+            //waitlist capacity
+            sql = "SELECT enrolled_classes.studentID FROM enrolled_classes WHERE enrolled_classes.sectionID = '" + sectionID + "';";
+            result = statement.executeQuery(sql);
+            while(result.next()){
+                students.add(result.getString("studentID")); 
+            }
+            if(!students.isEmpty()){
+                for(int i = 0; i < students.size(); i++){
+                    if(students.get(i).equals(studentID)){
+                        index = i;
+                    }
+                }
+            }
+            if(index <= enrollCapacity){
+                status = "enrolled";
+            }
+            else{
+                status = "waitlisted";
+            }
+        }catch (SQLException ex) {
+            System.err.println(ex.toString());
+        }
+        System.out.println("status: "+status);
+        return status;
     }
 
 

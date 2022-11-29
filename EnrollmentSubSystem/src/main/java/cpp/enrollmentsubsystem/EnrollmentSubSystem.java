@@ -133,6 +133,16 @@ public class EnrollmentSubSystem {
             viewCart.setAlignmentX(Component.CENTER_ALIGNMENT);
             debugPanel.add(viewCart);
             
+            JButton waitEnrollTest = new JButton("test waitlisted or enrolled");
+            waitEnrollTest.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    methods m = new methods();
+                    m.enrolledOrWaitlisted("0", "3560"); //hard coded to test
+                }
+            });
+            waitEnrollTest.setAlignmentX(Component.CENTER_ALIGNMENT);
+            debugPanel.add(waitEnrollTest);
+            
             face.add(debugPanel, "debugPanel");
             layout.show(face, "debugPanel");
             frame.add(face);
