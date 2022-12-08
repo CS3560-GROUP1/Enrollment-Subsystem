@@ -33,15 +33,13 @@ import javax.swing.SwingUtilities;
  */
 public class EnrollmentSubSystem {
     
-    private JFrame frame;
-    
     private boolean debugMode = false;
         
+    private JFrame frame;
     private JPanel face;
     private CardLayout layout;
     
     private LoginPanel loginPanel;
-    
     private JPanel debugPanel;
     
     public EnrollmentSubSystem(boolean mode){
@@ -111,7 +109,8 @@ public class EnrollmentSubSystem {
             createAcct.setAlignmentX(Component.CENTER_ALIGNMENT);
             debugPanel.add(createAcct);
 
-//            JButton sectionDetails = new JButton(" 'Section Details' screen (MOCK)");
+
+            //            JButton sectionDetails = new JButton(" 'Section Details' screen (MOCK)");
 //            sectionDetails.addActionListener((ActionEvent e) -> {
 //                String[] args = {};
 //                SectionDetailsPanel.main(args, null, null);
@@ -163,11 +162,14 @@ public class EnrollmentSubSystem {
         
         if(!debugMode)
             loginPanel.setVisible(true);
-        
+
     }
     
     /**
-     * 
+     * Mock Data Filler. If the 'enrollmentdb' databases exists AND
+     * the EnrollmentUser exist it will create the required tables formatted for their use if they 
+     * do not exist allready. MockData is only filled if the table needed to be created.
+     * Will not create a table that already exists.
      */
     public static void checkAndCreateSQLTables(){
         
@@ -408,6 +410,7 @@ public class EnrollmentSubSystem {
             System.out.println("DebugMode: Y/N: ");
             Scanner input = new Scanner(System.in);
             String choice = input.nextLine();
+
             while(!madeChoice){
                 switch (choice.charAt(0)) {
                     case 'Y', 'y' -> {
@@ -425,11 +428,14 @@ public class EnrollmentSubSystem {
                     }
                 }
             }
+
             input.close();
+
             if(ESS != null){
-                ESS.startUP();
+                ESS.startUP(); // ENTRY POINT
             } else {
                 System.err.println("ESS FAILURE");
+                System.exit(999);
             }
            
         });
@@ -448,7 +454,7 @@ public class EnrollmentSubSystem {
      */
     public static Connection getSQLConnection() throws SQLException{
         
-        Connection con;
+        Connection con = null;
         String url = "jdbc:mysql://localhost:3306/enrollmentdb"; // database name: enrollmentdb
         String user = "EnrollmentUser";
         String pass = "";
@@ -458,14 +464,17 @@ public class EnrollmentSubSystem {
             System.out.println("Connection Success: " + con.toString());
         }else{
             System.out.println("Connection Failed: Connetcion == null");
+
         }
         
         return con;
     }
     
     /**
-     * 
-     * @param pass 
+     * Debuging Method. Prints to the console associated inforamtion in creating a hashed password.
+     * A salt is randomly created. The salt is used to encrypt the given String using PBKDF2. Both the salt
+     * and 64 character lenth hexadecimal hash are printed on the console.
+     * @param pass - The String to be encrypted
      */
     public static void createPasswordHashSaltInfo(String pass){
         byte[] salt = createSalt();
@@ -476,7 +485,7 @@ public class EnrollmentSubSystem {
     }
     
     /**
-     * 
+     * Given a byte[] salt and a string password use the salt to encrypt the given string.
      * @param pass
      * @param salt
      * @return null on failure; 
@@ -500,7 +509,7 @@ public class EnrollmentSubSystem {
     }
     
     /**
-     * 
+     * Creates a random byte[] containing a salt to be used for password encryption.
      * @return 
      */
     public static byte[] createSalt(){
@@ -514,8 +523,9 @@ public class EnrollmentSubSystem {
     }
     
     /**
-     * slow
-     * @param hash
+     * SLOW
+     * Converts a given byte array into a corresponding Hexadecimal string.
+     * @param hash aray to be converted
      * @return 
      */
     public static String bitArrayToHex(byte[] hash){
@@ -531,7 +541,7 @@ public class EnrollmentSubSystem {
     }
     
     /**
-     * 
+     * Converts a given hexadecimal string into a byte array.
      * @param hex
      * @return 
      */
@@ -547,7 +557,7 @@ public class EnrollmentSubSystem {
     }
     
     /**
-     * 
+     * Checks is a table exisr with the given name, on a given connection.
      * @param con
      * @param tableName
      * @return

@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package cpp.enrollmentsubsystem;
 
 import java.awt.CardLayout;
@@ -17,6 +13,7 @@ import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.JButton;
@@ -44,6 +41,9 @@ public class LoginPanel extends JFrame{
     private JPanel facePanel;
     private CardLayout layout;
     
+    /**
+     * 
+     */
     public LoginPanel() {
         super();
         setTitle("Mock LoginPanel");
@@ -56,88 +56,18 @@ public class LoginPanel extends JFrame{
                 (int)(ScreenInformation.getHeight() * 0.6) 
         );
         setSize(size);
+        setPreferredSize(size);
         setLocationRelativeTo(null);
-        
         layout = new CardLayout(0, 0);
         facePanel = new JPanel(layout);
-               
-        JPanel mockLogin = new JPanel();
-        mockLogin.setPreferredSize(getPreferredSize());
-        mockLogin.setLayout(new GridBagLayout());
-        GridBagConstraints c = new GridBagConstraints();
-        
-        JLabel mainLogo = new JLabel("\n Login Page \n");
-        c.fill = GridBagConstraints.CENTER;
-        c.gridx = 2;
-        c.gridy = 2;
-        c.ipady = (int)(size.getHeight()/10);
-        mockLogin.add(mainLogo, c);
-        c.ipady = 0;
-        
+
+        //Handles most events that occur on the LoginPanel
         ActionListener loginListener = evt -> {
             
             switch (evt.getActionCommand()) {
                 
                 case "Sign in" -> {
-                    username = usernameJTextField.getText();
-                    password = passwordJTextField.getText();
-
-                    System.out.print(username + password);
-                    
-                    if( (username != null) && (password != null) ){
-                        //Username Length Check
-                        if(username.length() > 40){
-                            JOptionPane.showMessageDialog(mockLogin, "Username is not valid. Too many characters");
-                            return;
-                        }
-                        
-                        try {
-                            
-                            Connection con = EnrollmentSubSystem.getSQLConnection();
-                            PreparedStatement statement= con.prepareStatement("select * from logins "
-                                    + " where username= ? ;" );
-                            statement.setString(1, username);
-                            ResultSet RS = statement.executeQuery();
-                            
-                            if(!RS.isBeforeFirst()){
-                                
-                                JOptionPane.showMessageDialog(mockLogin, "Cant Find Account", "No Accounts", JOptionPane.INFORMATION_MESSAGE);
-                                
-                            }else{ // Not Empty
-                                if(RS.next()){
-                                    
-                                    String passHex = RS.getString("password_Hash");
-                                    String saltHex = RS.getString("password_Salt");
-                                    String ID = RS.getString("studentID");
-
-                                    byte[] salt = EnrollmentSubSystem.hexStringToBit(saltHex);
-                                    String inputPassHex = EnrollmentSubSystem.bitArrayToHex( EnrollmentSubSystem.passwordHash(password, salt) );
-
-                                    if ( passHex.equals(inputPassHex) ){
-                                        //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
-                                        con.close();
-                                        currentStudentID = ID;
-                                        new HomePanel(ID).populateHomePanel();
-                                        dispose();
-
-                                    } else {
-                                        JOptionPane.showMessageDialog(mockLogin, "Password is incorrect", "Incorrect Password", JOptionPane.ERROR_MESSAGE);
-                                    }
-                                }
-                                
-                            }
-                            con.close();
-                        } catch (SQLException ex) {
-                            System.err.println(ex.toString());
-                        }
-                        
-                    } else if (username != null){ // No Password Given
-                        JOptionPane.showMessageDialog(mockLogin, "Password is not valid. No Entry Given");
-                        return;
-                    } else {
-                        
-                    }
-                    
+                    signInAttempt();
                 }
                 
                 case "Recovery Back" -> {
@@ -152,7 +82,6 @@ public class LoginPanel extends JFrame{
                     System.out.println( recoveryUsername + " " + studentID );
                     System.out.println( recoveryUsername.isBlank() + " " + studentID.isBlank() );
 
-                    
                     if( !recoveryUsername.isBlank() || !studentID.isBlank() ){
                         
                         try{
@@ -277,119 +206,274 @@ public class LoginPanel extends JFrame{
             
         };
         
+        JPanel mockLogin = setUpMockLoginPanel(size, loginListener);
+        facePanel.add(mockLogin, "login");
+        
+        JPanel passwordRecoveryPanel = setUpPasswordRecoveryPanel(loginListener);
+        facePanel.add(passwordRecoveryPanel, "password");
+        
+        signUpPanel = new SignUpPanel(size,loginListener);
+        facePanel.add(signUpPanel, "signUP");
+
+        add(facePanel);
+        layout.show(facePanel, "login");
+    }
+    
+    /**
+     * 
+     */
+    public static void main(String[] args){
+        SwingUtilities.invokeLater( () -> {
+                new LoginPanel().setVisible(true);
+        });
+    }
+    /**
+     * 
+     * @param AL
+     * @return
+     */
+    private JPanel setUpPasswordRecoveryPanel(ActionListener AL){
+        // Password Recovery Panel
+        JPanel passwordRecoveryPanel = new JPanel();
+        passwordRecoveryPanel.setPreferredSize(this.getSize());
+        passwordRecoveryPanel.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.weighty = 1;
+        
+        JLabel informationJLabel = new JLabel();
+        informationJLabel.setText("Password Recovery");
+        c.gridx = 1;
+        c.gridy = 0;
+        c.gridwidth = 3;
+        c.gridheight = 2;
+        passwordRecoveryPanel.add(informationJLabel, c);
+        
+        
+        JLabel usernameLabel = new JLabel();
+        usernameLabel.setText("Username: ");
+        c.gridx = 1;
+        c.gridy = 3;
+        c.gridwidth = 3;
+        c.gridheight = 1;
+        passwordRecoveryPanel.add(usernameLabel,c);
+        
+        recoveryUsernameJTextField = new JTextField();
+        c.gridwidth = 3;
+        c.gridheight = 1;
+
+        c.ipadx = (int)(getSize().width * 0.5);
+
+        c.gridx = 1;
+        c.gridy = 4;
+        passwordRecoveryPanel.add(recoveryUsernameJTextField,c);
+
+        c.ipadx = 0;
+        
+        JLabel studentIDJLabel = new JLabel();
+        studentIDJLabel.setText("StudentID: ");
+        c.gridx = 1;
+        c.gridy = 6;
+
+        c.gridwidth = 3;
+        c.gridheight = 1;
+
+        passwordRecoveryPanel.add(studentIDJLabel, c);
+        
+        studentIDJTextField = new JTextField();
+        c.gridx = 1;
+        c.gridy = 7;
+
+        c.ipadx = (int)(getSize().width * 0.5);
+
+
+        c.gridwidth = 3;
+        c.gridheight = 1;
+
+        passwordRecoveryPanel.add(studentIDJTextField,c);
+        
+        c.ipadx = 0;
+
+
+        JButton passwordRecoveryJButton = new JButton();
+        passwordRecoveryJButton.setText("Submit");
+        passwordRecoveryJButton.setActionCommand("Recovery Submit");
+        passwordRecoveryJButton.addActionListener(AL);
+        
+        c.gridx = 1;
+        c.gridy = 9;
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+        passwordRecoveryPanel.add(passwordRecoveryJButton,c);
+        
+        JButton passRecBackButton = new JButton();
+        passRecBackButton.setText("Back");
+        passRecBackButton.setActionCommand("Recovery Back");
+        passRecBackButton.addActionListener(AL);
+        c.gridx = 3;
+        c.gridy = 9;
+
+        c.gridwidth = 1;
+        c.gridheight = 1;
+
+        passwordRecoveryPanel.add(passRecBackButton,c);
+
+        return passwordRecoveryPanel;
+    }
+
+    /**
+     * 
+     * @param size
+     * @param AL
+     * @return
+     */
+    private JPanel setUpMockLoginPanel(Dimension size, ActionListener AL){
+
+        JPanel mockLogin = new JPanel();
+        mockLogin.setPreferredSize(this.getSize());
+        mockLogin.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+
+        c.weightx = 1;
+        c.weighty = 1;
+        
+        JLabel mainLogo = new JLabel("\n Login Page \n");
+        final float fontConstant = 11.675f;
+        float fontSize = (float)(this.getSize().getWidth() / fontConstant);
+        mainLogo.setFont(mainLogo.getFont().deriveFont(fontSize));
+        c.gridx = 1;
+        c.gridy = 2;
+        c.gridwidth = 3;
+        //c.ipady = (int)(size.getHeight()/10);
+        mockLogin.add(mainLogo, c);
+        
+        //c.ipady = 0;
+        c.gridwidth = 1;
+
         JLabel usernameJLabel = new JLabel("Username: ");
-        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 2;
         c.gridy = 4;
         mockLogin.add(usernameJLabel, c);
         
         usernameJTextField = new JTextField();
-        c.gridx = 2;
+        usernameJTextField.setHorizontalAlignment(JTextField.CENTER);
+        c.gridx = 1;
         c.gridy = 5;
+        c.ipadx = (int) (getSize().width * 0.35);
+        c.gridwidth = 3;
         mockLogin.add(usernameJTextField, c);
+
+        c.ipadx = 0; c.gridwidth = 1;
 
         JLabel passwordJLabel = new JLabel("Password: ");
         c.gridx = 2;
         c.gridy = 7;
         mockLogin.add(passwordJLabel, c);
 
-        passwordJTextField = new JTextField();
-        c.gridx = 2;
+        passwordJTextField = new JPasswordField();
+        passwordJTextField.setHorizontalAlignment(JTextField.CENTER);
+        c.gridx = 1;
         c.gridy = 8;
-        passwordJTextField.addActionListener(loginListener);
+        c.ipadx = (int) (getSize().width * 0.35);
+        c.gridwidth = 3;
+        passwordJTextField.addActionListener(AL);
         passwordJTextField.setActionCommand("Sign in");
         mockLogin.add(passwordJTextField, c);
+
+        c.ipadx = 0; c.gridwidth = 1;
         
         JButton signJButton = new JButton("Sign in");
         c.gridx = 2;
         c.gridy = 10;
-        signJButton.addActionListener(loginListener);
+        signJButton.addActionListener(AL);
         signJButton.setActionCommand("Sign in");
         mockLogin.add(signJButton, c);
 
         JButton forgotJButton = new JButton("Forgot Password");
         c.gridx = 1;
         c.gridy = 12;
-        forgotJButton.addActionListener(loginListener);
+        forgotJButton.addActionListener(AL);
         forgotJButton.setActionCommand("Forgot Password");
         mockLogin.add(forgotJButton, c);
 
         JButton createAccJButton = new JButton("Create Account");
         c.gridx = 3;
         c.gridy = 12;
-        createAccJButton.addActionListener(loginListener);
+        createAccJButton.addActionListener(AL);
         createAccJButton.setActionCommand("Create Account");
         mockLogin.add(createAccJButton, c);
 
-        facePanel.add(mockLogin, "login");
-        
-        // Password Recovery Panel
-        JPanel passwordRecoveryPanel = new JPanel();
-        passwordRecoveryPanel.setLayout(new GridBagLayout());
-        
-        JLabel informationJLabel = new JLabel();
-        informationJLabel.setText("Password Recovery");
-        c.gridx = 1;
-        c.gridy = 0;
-        c.gridwidth = 2;
-        c.gridheight = 2;
-        passwordRecoveryPanel.add(informationJLabel, c);
-        c.gridheight = 1;
-        
-        JLabel usernameLabel = new JLabel();
-        usernameLabel.setText("Username: ");
-        c.gridx = 1;
-        c.gridy = 3;
-        passwordRecoveryPanel.add(usernameLabel,c);
-        
-        recoveryUsernameJTextField = new JTextField();
-        c.gridx = 1;
-        c.gridy = 4;
-        passwordRecoveryPanel.add(recoveryUsernameJTextField,c);
-        
-        JLabel studentIDJLabel = new JLabel();
-        studentIDJLabel.setText("StudentID: ");
-        c.gridx = 1;
-        c.gridy = 6;
-        passwordRecoveryPanel.add(studentIDJLabel, c);
-        
-        studentIDJTextField = new JTextField();
-        c.gridx = 1;
-        c.gridy = 7;
-        passwordRecoveryPanel.add(studentIDJTextField,c);
-        
-        JButton passwordRecoveryJButton = new JButton();
-        passwordRecoveryJButton.setText("Submit");
-        passwordRecoveryJButton.setActionCommand("Recovery Submit");
-        passwordRecoveryJButton.addActionListener(loginListener);
-        
-        c.gridx = 2;
-        c.gridy = 9;
-        passwordRecoveryPanel.add(passwordRecoveryJButton,c);
-        
-        JButton passRecBackButton = new JButton();
-        passRecBackButton.setText("Back");
-        passRecBackButton.setActionCommand("Recovery Back");
-        passRecBackButton.addActionListener(loginListener);
-        c.gridwidth = 1;
-        c.gridx = 3;
-        c.gridy = 12;
-        passwordRecoveryPanel.add(passRecBackButton,c);
-        
-        facePanel.add(passwordRecoveryPanel, "password");
-        signUpPanel = new SignUpPanel(size,loginListener);
-        
-        facePanel.add(signUpPanel, "signUP");
+        return mockLogin;
+    }
 
-        add(facePanel);
+    /**
+     * Collects the information in the textfields to process a sign in attempt.
+     */
+    private void signInAttempt(){
         
-        layout.show(facePanel, "login");
+        if(usernameJTextField.getText().length() > 0)
+            username = usernameJTextField.getText();
+        
+        if(passwordJTextField.getText().length() > 0)
+            password = passwordJTextField.getText();
+        
+        if(username == null){
+            JOptionPane.showMessageDialog(getParent(), "No username given");
+            return;
+        }
+        if(username.length() > 40){
+            JOptionPane.showMessageDialog(getParent(), "Username is not valid. Too many characters");
+            return;
+        }
+        if(password == null){
+            JOptionPane.showMessageDialog(getParent(), "Password is not valid. No Entry Given");
+            return;
+        }
+
+        try ( Connection con = EnrollmentSubSystem.getSQLConnection() ) {
+
+            PreparedStatement statement= con.prepareStatement("select * from logins "
+                    + " where username= ? ;" );
+            statement.setString(1, username);
+            ResultSet RS = statement.executeQuery();
+
+            if(!RS.isBeforeFirst()){
+                JOptionPane.showMessageDialog(getParent(), "Cant Find Account", "No Accounts", JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            if(!RS.next())
+                return;
+
+            String passHex = RS.getString("password_Hash");
+            String saltHex = RS.getString("password_Salt");
+            String ID = RS.getString("studentID");
+
+            byte[] salt = EnrollmentSubSystem.hexStringToBit(saltHex);
+            String inputPassHex = EnrollmentSubSystem.bitArrayToHex( EnrollmentSubSystem.passwordHash(password, salt) );
+
+            if ( passHex.equals(inputPassHex) ){
+                //System.out.println(rsUser + "\n" + passHex + "\n" + saltHex + "\n" + studentID);
+                con.close();
+                currentStudentID = ID;
+                new HomePanel(ID).populateHomePanel();
+                dispose();
+
+            } else {
+                JOptionPane.showMessageDialog(getParent(), "Password is incorrect", "Incorrect Password", JOptionPane.ERROR_MESSAGE);
+            }
+
+        } catch (SQLException ex) {
+            System.err.println("State: " + ex.getSQLState() + "Error Code: " + ex.getErrorCode() + "\n Exception: " + ex.toString());
+        }
+
+        username = null;
+        password = null;
+        passwordJTextField.setText("");
+
     }
-    
-    public static void main(String[] args){
-        SwingUtilities.invokeLater( () -> {
-                new LoginPanel().setVisible(true);
-        });
-    }
+
     
 }

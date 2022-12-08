@@ -25,11 +25,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 
 import java.util.Vector;
+
 /**
- *
- * @author LeothEcRz
+ *  The HomePanel JFrmae
+ * 
  */
-public class HomePanel extends JFrame{
+public final class HomePanel extends JFrame{
     
     private JPanel facePanel;
     private CardLayout layout;
