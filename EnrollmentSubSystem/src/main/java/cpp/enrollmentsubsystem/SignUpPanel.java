@@ -28,14 +28,31 @@ public class SignUpPanel extends JPanel{
     private JTextField confirmPasswordInput;
     private JTextField studentIDInput;
     private JTextField majorInput;
+    
+    private final int BorderPadding = 20;
 
     public SignUpPanel(Dimension size , ActionListener AL){
         
-        setSize(size);
-        int BorderPadding = 20;
+        setSize(size); 
         setLayout(new BorderLayout(BorderPadding, BorderPadding));
+        JPanel container = this.setUpContainerPanel(AL);
+        add(container);
+        setVisible(true);
+    }
+    
+    public void emptyTextFields(){
+        this.studentIDInput.setText("");
+        this.majorInput.setText("");
+        this.confirmPasswordInput.setText("");
+        this.lastNameInput.setText("");
+        this.passwordInput.setText("");
+        this.firstNameInput.setText("");
+    }
+    
+    private JPanel setUpContainerPanel(ActionListener AL){
+        
         JPanel container = new JPanel(null); // TOP LEVEL container
-        container.setSize(new Dimension(getWidth() - BorderPadding, getHeight() - BorderPadding));
+        container.setSize(new Dimension(this.getWidth() - BorderPadding, this.getHeight() - BorderPadding));
         container.setVisible(true);
 
         int containerHalfPoint = (int)(container.getWidth()/2);
@@ -179,6 +196,7 @@ public class SignUpPanel extends JPanel{
                 submit.getHeight());
         submit.setActionCommand("SignUp Submit");
         
+        //BackEnd
         ActionListener sumbimissionListener = evt ->{
             
             int confirm = 1;
@@ -196,90 +214,83 @@ public class SignUpPanel extends JPanel{
                     "1 or more required fields empty", 
                     "Sign Up Failed", 
                     JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if(!password.equals(passwordConfirmation)){
+                JOptionPane.showMessageDialog( getParent(), 
+                "Password Confirmation does not match", 
+                "Sign Up Failed", 
+                JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            byte[] salt = EnrollmentSubSystem.createSalt();
+            byte[] hash = EnrollmentSubSystem.passwordHash(password, salt);
+
+            String HashHex = EnrollmentSubSystem.bitArrayToHex(hash);
+            String SaltHex = EnrollmentSubSystem.bitArrayToHex(salt);
+
+            try(Connection con = EnrollmentSubSystem.getSQLConnection()){
                 
-            }else{
-                
-                if(password.equals(passwordConfirmation)){
-                    
-                    byte[] salt = EnrollmentSubSystem.createSalt();
-                    byte[] hash = EnrollmentSubSystem.passwordHash(password, salt);
-                    
-                    String HashHex = EnrollmentSubSystem.bitArrayToHex(hash);
-                    String SaltHex = EnrollmentSubSystem.bitArrayToHex(salt);
-                    
-                    try{
-                        Connection con = EnrollmentSubSystem.getSQLConnection();
-                        
-                        String sql = "INSERT INTO students (first_Name, last_Name, studentID, major) VALUES (?,?,?,?);";
-                        PreparedStatement statement = con.prepareStatement(sql);
-                        statement.setString(1, firstName);
-                        statement.setString(2, lastName);
-                        statement.setString(3, studentID);
-                        statement.setString(4, major);
-                        
-                        int row = statement.executeUpdate();
-                        if(row != 0){
-                            
-                            sql = "INSERT INTO logins (studentID, username, password_Hash, password_Salt) VALUES (?,?,?,?)";
-                            statement = con.prepareStatement(sql);
-                            statement.setString(1, studentID);
-                            statement.setString(2, firstName);
-                            statement.setString(3, HashHex);
-                            statement.setString(4, SaltHex);
-                            
-                            row = statement.executeUpdate();
-                            if(row != 0){
-                                
-                                confirm = JOptionPane.showConfirmDialog( getParent(), 
-                                    "Account Created! \n " + 
-                                    "Click OK to return to Login Screen",
-                                    "Sign Up Success", 
-                                    JOptionPane.PLAIN_MESSAGE);
-                                System.out.println(confirm);
-                                
-                            } else{
-                                System.err.println("Unknow Error Insert fail - no rows affected (logins) ");
-                            }
-                            
-                        } else {
-                            System.err.println("Unknow Error Insert fail - no rows affected");
-                        } // IF
-                        
-                        con.close();
-                    } catch(SQLException ex) {
-                        System.err.println(ex.toString());
-                    }
-                } else {
-                    
-                    JOptionPane.showMessageDialog( getParent(), 
-                    "Password Confirmation does not match", 
-                    "Sign Up Failed", 
-                    JOptionPane.ERROR_MESSAGE);
-                    
-                } // IF
+                String sql = "INSERT INTO students (first_Name, last_Name, studentID, major) VALUES (?,?,?,?);";
+                PreparedStatement statement = con.prepareStatement(sql);
+                statement.setString(1, firstName);
+                statement.setString(2, lastName);
+                statement.setString(3, studentID);
+                statement.setString(4, major);
+
+                int row = statement.executeUpdate();
+                if(row != 1){
+                    System.err.println("Unknow Error Insert fail - no rows affected");
+                    return; 
+                }
+
+                sql = "INSERT INTO logins (studentID, username, password_Hash, password_Salt) VALUES (?,?,?,?)";
+                statement = con.prepareStatement(sql);
+                statement.setString(1, studentID);
+                statement.setString(2, firstName);
+                statement.setString(3, HashHex);
+                statement.setString(4, SaltHex);
+
+                row = statement.executeUpdate();
+                if(row != 1){
+                    System.err.println("Unknow Error Insert fail - no rows affected (logins) ");
+                    return; 
+                }
+                confirm = JOptionPane.showConfirmDialog( getParent(), 
+                    "Account Created! \n " + 
+                    "Click OK to return to Login Screen",
+                    "Sign Up Success", 
+                    JOptionPane.PLAIN_MESSAGE);
+                System.out.println(confirm);
                 
                 if(confirm != 1){
                     AL.actionPerformed(evt);
                 }
+            } catch(SQLException ex) {
+                System.err.println(ex.toString());
+                System.err.println(ex.getErrorCode());
+                System.err.println(ex.getSQLState());
                 
+                switch (ex.getErrorCode()) {
+                    case 1062 -> {
+                        JOptionPane.showConfirmDialog( getParent(), 
+                            "There is an account with that student ID in our system. Try Recover Password",
+                            "Student ID already in System", 
+                            JOptionPane.PLAIN_MESSAGE);
+                            studentIDInput.setText("");
+                        return;
+                    }
+                    default -> throw new AssertionError();
+                }
+
             }
-        
         };
-        
         submit.addActionListener(sumbimissionListener);
         container.add(BorderLayout.CENTER,submit);
-
-        add(container);
-        setVisible(true);
-    }
-    
-    public void emptyTextFields(){
-        this.studentIDInput.setText("");
-        this.majorInput.setText("");
-        this.confirmPasswordInput.setText("");
-        this.lastNameInput.setText("");
-        this.passwordInput.setText("");
-        this.firstNameInput.setText("");
+        
+        return container;
     }
     
 }
