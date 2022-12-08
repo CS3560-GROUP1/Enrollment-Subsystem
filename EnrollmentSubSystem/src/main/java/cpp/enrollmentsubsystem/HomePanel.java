@@ -158,12 +158,48 @@ public final class HomePanel extends JFrame{
                 }
             };
 
+            JPopupMenu menu1 = new JPopupMenu();
+            
+            JMenuItem mi01 = new JMenuItem();
+            mi01.setText("Winter");
+            mi01.addActionListener(menuListner);
+            mi01.setActionCommand("Winter");
+            
+            JMenuItem mi02 = new JMenuItem();
+            mi02.setText("Spring");
+            mi02.addActionListener(menuListner);
+            mi02.setActionCommand("Spring");
+            
+            JMenuItem mi03 = new JMenuItem();
+            mi03.setText("Summer");
+            mi03.addActionListener(menuListner);
+            mi03.setActionCommand("Summer");
+            
+            JMenuItem mi04 = new JMenuItem();
+            mi04.setText("Fall");
+            mi04.addActionListener(menuListner);
+            mi04.setActionCommand("Fall");
+            
+            menu1.add(mi01);
+            menu1.add(mi02);
+            menu1.add(mi03);
+            menu1.add(mi04);
+            
+            JButton changeTerm = new JButton("Change Term");
+            ActionListener termListener = evt -> {
+                menu1.show(rightTopPanel, changeTerm.getX(), changeTerm.getY() + changeTerm.getHeight()); // menu under button
+            };
+            changeTerm.addActionListener(termListener);
+            rightTopPanel.add(changeTerm);
+            
             JPopupMenu menu = new JPopupMenu();
 
-            JButton changeTermButton = new JButton("Drop selected");
-            changeTermButton.setActionCommand("Drop selected");
-            changeTermButton.addActionListener(menuListner);
-            rightTopPanel.add(changeTermButton);
+            JButton dropClassesButton = new JButton("Drop selected");
+            dropClassesButton.setActionCommand("Drop selected");
+            dropClassesButton.addActionListener(menuListner);
+            rightTopPanel.add(dropClassesButton);
+            
+           
 
             JMenuItem mi1 = new JMenuItem();
             mi1.setText("Search");
@@ -258,7 +294,7 @@ public final class HomePanel extends JFrame{
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
             bottomScrollPane.setBounds(bottomScrollPaneOffset, bottomScrollPaneOffset, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
             bottomPanel.add(bottomScrollPane);
-            
+             
             
         } catch (SQLException e) { System.err.println( "Connection Failed (Home Panel Population): " + e.toString() ); }
         
