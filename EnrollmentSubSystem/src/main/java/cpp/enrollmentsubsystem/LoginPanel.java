@@ -75,115 +75,7 @@ public class LoginPanel extends JFrame{
                 }
                 
                 case "Recovery Submit" -> {
-                    
-                    String recoveryUsername = recoveryUsernameJTextField.getText();
-                    String studentID = studentIDJTextField.getText();
-                    
-                    System.out.println( recoveryUsername + " " + studentID );
-                    System.out.println( recoveryUsername.isBlank() + " " + studentID.isBlank() );
-
-                    if( !recoveryUsername.isBlank() || !studentID.isBlank() ){
-                        
-                        try{
-                            Connection con = EnrollmentSubSystem.getSQLConnection();
-                            String sql = "SELECT * FROM logins WHERE username=? AND studentID=?; ";
-                            PreparedStatement sta = con.prepareStatement(sql);
-                            sta.setString(1, recoveryUsername);
-                            sta.setString(2, studentID);
-                            
-                            ResultSet RS = sta.executeQuery();
-                            
-                            if(!(RS.isBeforeFirst())){
-                                JOptionPane.showMessageDialog(getParent(), "No account has been found using the given information", "No Account", JOptionPane.ERROR_MESSAGE);
-                            }else{
-                                if(RS.next()){
-                                    
-                                    JDialog newPasswordDialog = new JDialog(this.getOwner());
-                                    newPasswordDialog.setLayout(null);
-                                    newPasswordDialog.setSize( (int)(ScreenInformation.getWidth() * 0.3), (int)(ScreenInformation.getHeight() * 0.2));
-                                    newPasswordDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-                                    newPasswordDialog.setLocation( (int)(getX()+(getWidth()/2) - ( newPasswordDialog.getWidth()/2 )),
-                                            (int)(getY()+(getHeight()/2) - (newPasswordDialog.getHeight()/2)) );
-                                    newPasswordDialog.setModal(true);
-                                        
-                                        newPasswordDialog.setTitle("New Password");
-                                        newPasswordDialog.setResizable(false);
-                                        
-                                        JLabel dialogInfoLabel = new JLabel(("A New Password will be made for " + recoveryUsername + ". StudentID: " + studentID +"."));
-                                        dialogInfoLabel.setBounds( (int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.1), dialogInfoLabel.getPreferredSize().width, dialogInfoLabel.getPreferredSize().height);
-                                        newPasswordDialog.add(dialogInfoLabel);
-                                        
-                                        JLabel newpassLabel = new JLabel("New Password: ");
-                                        newpassLabel.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.2), newpassLabel.getPreferredSize().width, newpassLabel.getPreferredSize().height);
-                                        newPasswordDialog.add(newpassLabel);
-                                        
-                                        JTextField newpassTextField = new JTextField();
-                                        newpassTextField.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.3), (int)(newPasswordDialog.getWidth() * 0.5), (int)(newPasswordDialog.getHeight() * 0.1));
-                                        newPasswordDialog.add(newpassTextField);
-                                        
-                                        JLabel newpassconLabel = new JLabel("Confirm Password: ");
-                                        newpassconLabel.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.5), newpassLabel.getPreferredSize().width, newpassLabel.getPreferredSize().height);
-                                        newPasswordDialog.add(newpassconLabel);
-                                        
-                                        JTextField newpassconTextField = new JTextField();
-                                        newpassconTextField.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.6), (int)(newPasswordDialog.getWidth() * 0.5), (int)(newPasswordDialog.getHeight() * 0.1));
-                                        newPasswordDialog.add(newpassconTextField);
-                                        
-                                        JButton newpassSubmit = new JButton("Submit");
-                                        newpassSubmit.setBounds( (int)(newPasswordDialog.getWidth() * 0.70 ), (int)(newPasswordDialog.getHeight() * 0.5), (int)(newPasswordDialog.getWidth() * 0.2), (int)(newPasswordDialog.getHeight() * 0.2) );
-                                        
-                                        ActionListener newPasswordAL = ev -> {
-                                            String newPass = newpassTextField.getText();
-                                            if(newPass.equals(newpassconTextField.getText())){
-                                                byte[] salt = EnrollmentSubSystem.createSalt();
-                                                byte[] hash = EnrollmentSubSystem.passwordHash(newPass, salt);
-                                                
-                                                String saltHex = EnrollmentSubSystem.bitArrayToHex(salt);
-                                                String hashHex = EnrollmentSubSystem.bitArrayToHex(hash);
-                                                
-                                                try{
-                                                    Connection con0 = EnrollmentSubSystem.getSQLConnection();
-                                                    String sql0 = "UPDATE logins SET password_Hash=?, password_Salt=? WHERE username=? AND studentID=? ; ";
-                                                    PreparedStatement sta0 = con0.prepareStatement(sql0);
-                                                    sta0.setString(1, hashHex);
-                                                    sta0.setString(2, saltHex);
-                                                    sta0.setString(3, recoveryUsername);
-                                                    sta0.setString(4, studentID);
-                                                    
-                                                    int rows = sta0.executeUpdate();
-                                                    if(rows > 0){
-                                                        newPasswordDialog.dispose();
-                                                        JOptionPane.showMessageDialog(getParent(), "Password change complete.", "Success", JOptionPane.PLAIN_MESSAGE);
-                                                        this.recoveryUsernameJTextField.setText("");
-                                                        this.studentIDJTextField.setText("");
-                                                        this.layout.show(facePanel, "login");
-                                                    }
-                                                    con0.close();
-                                                    
-                                                }catch(SQLException ex){
-                                                    System.err.println(ex.toString() + " LoginPanel_newPasswordAL ");
-                                                }
-                                                
-                                            }
-                                            
-                                            
-                                        };
-                                        
-                                        newpassSubmit.addActionListener(newPasswordAL);
-                                        newPasswordDialog.add(newpassSubmit);
-                                        
-                                    newPasswordDialog.setVisible(true);
-                                    
-                                }
-                            }
-                            con.close();
-                        } catch (SQLException wx){
-                            
-                        }
-                    }else{ 
-                        JOptionPane.showMessageDialog(getParent(), "A field has not been filled in", "Empty Field", JOptionPane.ERROR_MESSAGE);
-                    }
-                    
+                      recoverySubmitAttempt();
                 }
                 
                 case "Forgot Password" ->{
@@ -227,9 +119,12 @@ public class LoginPanel extends JFrame{
                 new LoginPanel().setVisible(true);
         });
     }
+    
+    
+    
     /**
-     * 
-     * @param AL
+     * Creates the password recovery panel.
+     * @param AL action listener responsible for controlling buttons on the page.
      * @return
      */
     private JPanel setUpPasswordRecoveryPanel(ActionListener AL){
@@ -324,9 +219,9 @@ public class LoginPanel extends JFrame{
     }
 
     /**
-     * 
-     * @param size
-     * @param AL
+     * Creates the login panel used on the login page.
+     * @param size - DEPRECATED
+     * @param AL - action lister that will control the buttons on the panel
      * @return
      */
     private JPanel setUpMockLoginPanel(Dimension size, ActionListener AL){
@@ -409,7 +304,7 @@ public class LoginPanel extends JFrame{
     }
 
     /**
-     * Collects the information in the textfields to process a sign in attempt.
+     * Collects the information in the text fields to process a sign in attempt.
      */
     private void signInAttempt(){
         
@@ -475,5 +370,138 @@ public class LoginPanel extends JFrame{
 
     }
 
+    /**
+     * Attempt a password recovery for the account with the given username
+     * and studentID. Takes text from fields on the page.
+     */
+    private void recoverySubmitAttempt(){
+        
+        String recoveryUsername = null;
+        if(recoveryUsernameJTextField.getText().length() > 0)
+             recoveryUsername = recoveryUsernameJTextField.getText();
+        
+        String studentID = null;
+        if(studentIDJTextField.getText().length() > 0)
+            studentID = studentIDJTextField.getText();
+
+        if(recoveryUsername == null || studentID == null){
+            JOptionPane.showMessageDialog(getParent(), "A field has not been filled in", "Empty Field", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        try(Connection con = EnrollmentSubSystem.getSQLConnection()){
+            String sql = "SELECT * FROM logins WHERE username=? AND studentID=?; ";
+            PreparedStatement sta = con.prepareStatement(sql);
+            sta.setString(1, recoveryUsername);
+            sta.setString(2, studentID);
+
+            ResultSet RS = sta.executeQuery();
+            
+            if(!RS.isBeforeFirst()){
+                JOptionPane.showMessageDialog(getParent(), "No account has been found using the given information", "No Account", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if(!RS.next())
+                return;
+            
+            JDialog newPasswordDialog = createPasswordRecoveryDialog(recoveryUsername, studentID);
+            newPasswordDialog.setVisible(true);
+            
+        } catch(SQLException ex){
+            
+        }
+    }
     
+    /**
+     * Create the password recovery dialog for the account with matching 
+     * information.
+     * @param recoveryUsername - username of account
+     * @param studentID - id of the account
+     * @return the dialog with the correct information and its own action listener
+     */
+    private JDialog createPasswordRecoveryDialog(String recoveryUsername, String studentID){
+        
+        Dimension ScreenInformation = Toolkit.getDefaultToolkit().getScreenSize(); // Get ScreenSize
+        JDialog newPasswordDialog = new JDialog(this.getOwner());
+
+        newPasswordDialog.setLayout(null);
+        newPasswordDialog.setSize( (int)(ScreenInformation.getWidth() * 0.3), (int)(ScreenInformation.getHeight() * 0.2));
+        newPasswordDialog.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        newPasswordDialog.setLocation( (int)(getX()+(getWidth()/2) - ( newPasswordDialog.getWidth()/2 )),
+                (int)(getY()+(getHeight()/2) - (newPasswordDialog.getHeight()/2)) );
+        newPasswordDialog.setModal(true);
+
+        newPasswordDialog.setTitle("New Password");
+        newPasswordDialog.setResizable(false);
+
+        JLabel dialogInfoLabel = new JLabel(("A New Password will be made for - Student: " + recoveryUsername + " StudentID: " + studentID +"."));
+        dialogInfoLabel.setBounds( (int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.1), dialogInfoLabel.getPreferredSize().width, dialogInfoLabel.getPreferredSize().height);
+        newPasswordDialog.add(dialogInfoLabel);
+
+        JLabel newpassLabel = new JLabel("New Password: ");
+        newpassLabel.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.2), newpassLabel.getPreferredSize().width, newpassLabel.getPreferredSize().height);
+        newPasswordDialog.add(newpassLabel);
+
+        JTextField newpassTextField = new JTextField();
+        newpassTextField.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.3), (int)(newPasswordDialog.getWidth() * 0.5), (int)(newPasswordDialog.getHeight() * 0.1));
+        newPasswordDialog.add(newpassTextField);
+
+        JLabel newpassconLabel = new JLabel("Confirm Password: ");
+        newpassconLabel.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.5), newpassLabel.getPreferredSize().width, newpassLabel.getPreferredSize().height);
+        newPasswordDialog.add(newpassconLabel);
+
+        JTextField newpassconTextField = new JTextField();
+        newpassconTextField.setBounds((int)(newPasswordDialog.getWidth() * 0.1), (int)(newPasswordDialog.getHeight() * 0.6), (int)(newPasswordDialog.getWidth() * 0.5), (int)(newPasswordDialog.getHeight() * 0.1));
+        newPasswordDialog.add(newpassconTextField);
+
+        JButton newpassSubmit = new JButton("Submit");
+        newpassSubmit.setBounds( (int)(newPasswordDialog.getWidth() * 0.70 ), (int)(newPasswordDialog.getHeight() * 0.5), (int)(newPasswordDialog.getWidth() * 0.2), (int)(newPasswordDialog.getHeight() * 0.2) );
+
+
+        ActionListener newPasswordAL = ev -> {
+            String newPass = newpassTextField.getText();
+            
+            if( ! newPass.equals(newpassconTextField.getText()) ){
+                JOptionPane.showMessageDialog(getParent(), "The password fields do not match. The confirmation does not match the entered password.", "Confimration Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            byte[] salt = EnrollmentSubSystem.createSalt();
+            byte[] hash = EnrollmentSubSystem.passwordHash(newPass, salt);
+
+            String saltHex = EnrollmentSubSystem.bitArrayToHex(salt);
+            String hashHex = EnrollmentSubSystem.bitArrayToHex(hash);
+
+            try(Connection con0 = EnrollmentSubSystem.getSQLConnection();){
+                String sql0 = "UPDATE logins SET password_Hash=?, password_Salt=? WHERE username=? AND studentID=? ; ";
+                PreparedStatement sta0 = con0.prepareStatement(sql0);
+                sta0.setString(1, hashHex);
+                sta0.setString(2, saltHex);
+                sta0.setString(3, recoveryUsername);
+                sta0.setString(4, studentID);
+
+                int rows = sta0.executeUpdate();
+                if(rows <= 0){
+                    JOptionPane.showMessageDialog(getParent(), "Update Failed", "No Rows Updated", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
+                newPasswordDialog.dispose();
+                JOptionPane.showMessageDialog(getParent(), "Password change complete.", "Success", JOptionPane.PLAIN_MESSAGE);
+                this.recoveryUsernameJTextField.setText("");
+                this.studentIDJTextField.setText("");
+                this.layout.show(facePanel, "login");
+                
+                
+            }catch(SQLException ex){
+                System.err.println(ex.toString() + " LoginPanel_newPasswordAL ");
+            }  
+        };
+        
+        newpassSubmit.addActionListener(newPasswordAL);
+        newPasswordDialog.add(newpassSubmit);
+        
+        return newPasswordDialog;
+    }
 }
