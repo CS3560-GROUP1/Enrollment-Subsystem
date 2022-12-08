@@ -16,6 +16,7 @@ import java.sql.Time;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import java.awt.event.*;   
+import java.util.ArrayList;
 /**
  *
  * @author LeothEcRz
@@ -23,7 +24,7 @@ import java.awt.event.*;
 public class UserSchedulesInnerPanel extends JPanel {
     
     
-    public UserSchedulesInnerPanel(Dimension size, String course_Name, String subject, String term, int units, String professor, String ID, Vector<String> dropList, Time start_time, Time end_time, boolean Monday, boolean Tuesday,  boolean Wednesday,  boolean Thursday,  boolean Friday,  boolean Saturday, boolean Sunday){
+    public UserSchedulesInnerPanel(Dimension size, String course_Name, String subject, String term, int units, String professor, String ID, ArrayList<String> dropList, Time start_time, Time end_time, boolean Monday, boolean Tuesday,  boolean Wednesday,  boolean Thursday,  boolean Friday,  boolean Saturday, boolean Sunday){
         super();
         setBackground(new Color(Integer.parseInt(ID) * 5, Integer.parseInt(ID) * 10, Integer.parseInt(ID) * 7));
         
@@ -81,7 +82,7 @@ public class UserSchedulesInnerPanel extends JPanel {
                 if (cb.isSelected()) {
                     dropList.add(ID);
                 } else {
-                    dropList.removeElementAt(dropList.indexOf(ID));
+                    dropList.remove(dropList.indexOf(ID));
                 }
             }
         });

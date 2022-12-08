@@ -8,8 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
-
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 
 /**
@@ -24,8 +23,9 @@ public class UserSchedulesPanel extends JPanel {
      * @param size
      * @param con
      * @param studentID 
+     * @param dropList 
      */
-    public UserSchedulesPanel(Dimension size, Connection con, String studentID, Vector<String> dropList){
+    public UserSchedulesPanel(Dimension size, Connection con, String studentID, ArrayList<String> dropList){
         super();
         this.setBackground(Color.lightGray);
         setLayout(null);

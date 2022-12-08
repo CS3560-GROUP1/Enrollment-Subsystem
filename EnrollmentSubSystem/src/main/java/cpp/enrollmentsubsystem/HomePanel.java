@@ -15,6 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -42,7 +43,7 @@ public final class HomePanel extends JFrame{
     private UserSchedulesPanel uSchedulesPanel;
     private JScrollPane bottomScrollPane;
 
-    public Vector<String> dropList;
+    public ArrayList<String> dropList;
     public String studentID;
     
     int bottomScrollPaneOffset;
@@ -252,7 +253,7 @@ public final class HomePanel extends JFrame{
             
             bottomScrollPane.remove(uSchedulesPanel);
             bottomPanel.remove(bottomScrollPane);
-            dropList = new Vector<String>();
+            dropList = new ArrayList<String>();
             uSchedulesPanel = new UserSchedulesPanel(this.getSize(), con, studentID, dropList);
             bottomScrollPane = new JScrollPane(uSchedulesPanel);
             bottomScrollPane.setBounds(bottomScrollPaneOffset, bottomScrollPaneOffset, uSchedulesPanel.getWidth() + 25, (int)(bottomPanel.getHeight() * 0.8) );
